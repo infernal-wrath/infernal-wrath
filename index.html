@@ -65,6 +65,7 @@ body {
   transition: background .3s ease, color .3s ease;
   min-height: 100dvh;
 }
+body.logged-in { padding-bottom: 76px; }
 .display { font-family: 'Bricolage Grotesque', sans-serif; letter-spacing: -.02em; line-height: 1.08; }
 
 /* ── Shared utilities ── */
@@ -123,7 +124,30 @@ body {
 .icon-btn:hover { background: var(--brass-soft); }
 
 /* ============================================================
-   VIEWS (login / home)
+   BOTTOM NAV
+   ============================================================ */
+.bottom-nav {
+  display: none;
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 100;
+  background: color-mix(in srgb, var(--panel) 94%, transparent);
+  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  border-top: 1px solid var(--line);
+  padding: 8px 0 max(16px, env(safe-area-inset-bottom));
+}
+body.logged-in .bottom-nav { display: flex; }
+.bottom-nav button {
+  flex: 1; border: 0; background: transparent;
+  cursor: pointer; color: var(--faint);
+  font-family: inherit; font-size: 10.5px; font-weight: 600;
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  padding: 4px 0;
+  transition: color .15s;
+}
+.bottom-nav button .ni { font-size: 20px; line-height: 1; }
+.bottom-nav button.on { color: var(--brass); }
+
+/* ============================================================
+   VIEWS
    ============================================================ */
 .view { display: none; }
 .view.active { display: block; }
@@ -133,7 +157,7 @@ body {
    ============================================================ */
 #login-view {
   min-height: calc(100dvh - 62px);
-  display: none; /* overridden by .active */
+  display: none;
   flex-direction: column; align-items: center; justify-content: center;
   padding: 40px 20px;
 }
@@ -145,9 +169,7 @@ body {
   border-radius: 24px; padding: 36px 32px;
   box-shadow: var(--shadow-lg);
 }
-.login-logo {
-  display: flex; align-items: center; gap: 11px; margin-bottom: 28px;
-}
+.login-logo { display: flex; align-items: center; gap: 11px; margin-bottom: 28px; }
 .login-logo .mark { width: 42px; height: 42px; border-radius: 13px; }
 .login-logo .mark span { font-size: 18px; }
 .login-logo b { font-family: 'Bricolage Grotesque'; font-weight: 700; font-size: 20px; }
@@ -175,15 +197,10 @@ body {
   white-space: nowrap; flex-shrink: 0;
 }
 
-.otp-row {
-  display: none; /* shown after phone submit */
-  flex-direction: column; margin-top: 18px;
-}
+.otp-row { display: none; flex-direction: column; margin-top: 18px; }
 .otp-row.show { display: flex; }
-
 .otp-hint { font-size: 13px; color: var(--muted); margin-bottom: 14px; }
 .otp-hint b { color: var(--ink); }
-
 .otp-inputs { display: flex; gap: 10px; margin-bottom: 18px; }
 .otp-inputs input {
   flex: 1; aspect-ratio: 1; text-align: center;
@@ -191,8 +208,7 @@ body {
   background: var(--bg); border: 1.5px solid var(--line);
   border-radius: 12px; color: var(--ink);
   font-family: 'Bricolage Grotesque', sans-serif;
-  outline: none; transition: border-color .15s;
-  min-width: 0;
+  outline: none; transition: border-color .15s; min-width: 0;
 }
 .otp-inputs input:focus { border-color: var(--brass); }
 
@@ -201,8 +217,7 @@ body {
   background: var(--teal); color: #fff;
   font-family: inherit; font-size: 15px; font-weight: 700;
   border: 0; border-radius: 13px; cursor: pointer;
-  transition: opacity .15s, transform .1s;
-  letter-spacing: -.01em;
+  transition: opacity .15s, transform .1s; letter-spacing: -.01em;
 }
 [data-theme="dark"] .btn-primary { color: var(--ink); }
 .btn-primary:hover { opacity: .88; }
@@ -216,9 +231,8 @@ body {
 /* ============================================================
    HOME SCREEN
    ============================================================ */
-#home-view { padding-bottom: 48px; }
+#home-view { padding-bottom: 8px; }
 
-/* greeting header */
 .greeting {
   max-width: var(--max); margin: 0 auto; padding: 28px 20px 0;
   display: flex; align-items: center; gap: 13px;
@@ -282,8 +296,6 @@ body {
   cursor: pointer; box-shadow: var(--shadow);
   font-family: inherit; font-size: 11.5px; font-weight: 600;
   color: var(--ink); transition: transform .15s, box-shadow .15s;
-  border: none; /* override */
-  border: 1px solid var(--line);
 }
 .qa-btn:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
 .qa-icon {
@@ -305,10 +317,7 @@ body {
   padding: 12px 0; border-bottom: 1px solid var(--line-2);
 }
 .notice-row:last-child { border-bottom: 0; padding-bottom: 0; }
-.dot {
-  width: 9px; height: 9px; border-radius: 50%;
-  flex-shrink: 0; margin-top: 5px;
-}
+.dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; margin-top: 5px; }
 .notice-title { font-weight: 600; font-size: 14px; }
 .notice-sub { color: var(--muted); font-size: 12.5px; margin-top: 2px; }
 .notice-time { margin-left: auto; font-size: 11px; color: var(--faint); white-space: nowrap; padding-left: 8px; }
@@ -318,6 +327,7 @@ body {
   display: flex; align-items: center; gap: 14px;
   background: var(--red-soft); border: 1px solid var(--red);
   border-radius: 18px; padding: 16px 18px; margin-bottom: 14px;
+  transition: background .4s, border-color .4s;
 }
 .sos-text b { color: var(--red); font-family: 'Bricolage Grotesque'; font-weight: 700; font-size: 16px; display: block; }
 .sos-text small { color: var(--muted); font-size: 12.5px; display: block; margin-top: 2px; }
@@ -334,7 +344,117 @@ body {
 .sos-btn:active { transform: scale(.95); }
 
 /* ============================================================
-   SOS DIALOG
+   AMENITIES SCREEN
+   ============================================================ */
+#amen-view { padding-bottom: 8px; }
+
+.amen-head {
+  max-width: var(--max); margin: 0 auto; padding: 24px 20px 0;
+  display: flex; align-items: flex-start; justify-content: space-between;
+}
+.amen-head-lbl { font-size: 13px; color: var(--muted); font-weight: 500; }
+.amen-head-name {
+  font-family: 'Bricolage Grotesque'; font-weight: 700;
+  font-size: 22px; margin-top: 2px;
+}
+.fee-pill {
+  padding: 7px 13px;
+  background: var(--brass-soft); border: 1px solid rgba(169,114,43,.25);
+  border-radius: 30px; font-size: 13px; font-weight: 700;
+  color: var(--brass); white-space: nowrap; margin-top: 4px;
+}
+
+/* amenity selector — horizontal scroll */
+.amen-selector-wrap {
+  overflow-x: auto; padding: 14px 0 4px;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.amen-selector-wrap::-webkit-scrollbar { display: none; }
+.amen-selector {
+  display: flex; gap: 9px;
+  padding: 0 20px;
+  max-width: calc(var(--max) + 40px); margin: 0 auto;
+}
+.amen-chip {
+  flex-shrink: 0;
+  display: flex; align-items: center; gap: 7px;
+  padding: 9px 15px; border-radius: 30px;
+  border: 1.5px solid var(--line); background: var(--card);
+  font-family: inherit; font-size: 13px; font-weight: 600;
+  color: var(--muted); cursor: pointer;
+  box-shadow: var(--shadow); transition: .15s;
+}
+.amen-chip .chip-icon { font-size: 15px; }
+.amen-chip.on {
+  background: var(--teal); color: #fff; border-color: var(--teal);
+}
+[data-theme="dark"] .amen-chip.on { color: var(--ink); }
+.amen-chip:not(.on):hover { border-color: var(--brass); color: var(--ink); }
+
+/* week strip */
+.week-strip {
+  display: flex; gap: 8px;
+  margin-bottom: 18px;
+  overflow-x: auto; padding-bottom: 4px;
+  scrollbar-width: none;
+}
+.week-strip::-webkit-scrollbar { display: none; }
+.day-btn {
+  flex: 1; min-width: 52px;
+  border: 1.5px solid var(--line); background: var(--card);
+  border-radius: 14px; padding: 10px 0; cursor: pointer;
+  text-align: center; transition: .15s;
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+}
+.day-btn .dn { font-size: 10px; font-weight: 600; color: var(--muted); text-transform: uppercase; }
+.day-btn .dd { font-family: 'Bricolage Grotesque'; font-weight: 700; font-size: 17px; color: var(--ink); }
+.day-btn.on { background: var(--teal); border-color: var(--teal); }
+.day-btn.on .dn { color: rgba(255,255,255,.7); }
+.day-btn.on .dd { color: #fff; }
+[data-theme="dark"] .day-btn.on .dd { color: var(--ink); }
+[data-theme="dark"] .day-btn.on .dn { color: var(--muted); }
+.day-btn.today .dd { color: var(--brass); }
+.day-btn.today.on .dd { color: #fff; }
+[data-theme="dark"] .day-btn.today:not(.on) .dd { color: var(--brass); }
+
+/* slot items */
+.slot-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 13px 16px;
+  background: var(--card); border: 1px solid var(--line);
+  border-radius: 14px; margin-bottom: 9px;
+  box-shadow: var(--shadow);
+}
+.slot-item .slot-time { font-weight: 600; font-size: 14px; }
+.slot-item .slot-avail { margin-left: auto; font-size: 12px; font-weight: 700; }
+.slot-item.free .slot-avail { color: var(--green); }
+.slot-item.full .slot-avail { color: var(--red); }
+.slot-bk-btn {
+  border: 0; font-family: inherit; font-weight: 700;
+  font-size: 12.5px; padding: 9px 15px; border-radius: 10px; cursor: pointer;
+  transition: opacity .15s;
+}
+.slot-item.free .slot-bk-btn { background: var(--brass); color: #1c1407; }
+.slot-item.free .slot-bk-btn:hover { opacity: .85; }
+.slot-item.full .slot-bk-btn { background: var(--line); color: var(--muted); cursor: default; }
+
+/* my bookings row */
+.booking-row {
+  display: flex; gap: 12px; align-items: center;
+  padding: 12px 0; border-bottom: 1px solid var(--line-2);
+}
+.booking-row:last-child { border-bottom: 0; padding-bottom: 0; }
+.booking-icon {
+  width: 38px; height: 38px; border-radius: 11px; flex-shrink: 0;
+  background: var(--green-soft); display: grid; place-items: center; font-size: 18px;
+}
+.booking-name { font-weight: 600; font-size: 13.5px; }
+.booking-when { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.booking-ref { font-size: 11px; color: var(--faint); margin-left: auto; white-space: nowrap; padding-left: 8px; }
+
+/* ============================================================
+   DIALOGS & OVERLAYS
    ============================================================ */
 .overlay {
   position: fixed; inset: 0; z-index: 200;
@@ -349,8 +469,8 @@ body {
   animation: pop .25s cubic-bezier(.34,1.56,.64,1);
 }
 @keyframes pop { from { opacity: 0; transform: scale(.88); } to { opacity: 1; transform: scale(1); } }
-.dialog .sos-emoji { font-size: 48px; margin-bottom: 14px; }
-.dialog h3 { font-family: 'Bricolage Grotesque'; font-size: 22px; font-weight: 700; margin-bottom: 8px; color: var(--red); }
+.dialog .dlg-emoji { font-size: 48px; margin-bottom: 14px; }
+.dialog h3 { font-family: 'Bricolage Grotesque'; font-size: 22px; font-weight: 700; margin-bottom: 8px; }
 .dialog p { color: var(--muted); font-size: 14px; margin-bottom: 24px; line-height: 1.6; }
 .dialog-btns { display: flex; gap: 10px; }
 .btn-cancel {
@@ -359,6 +479,14 @@ body {
   font-family: inherit; font-size: 14px; font-weight: 600;
   color: var(--muted); cursor: pointer;
 }
+.btn-confirm {
+  flex: 1; padding: 12px; border-radius: 12px;
+  background: var(--teal); border: 0;
+  font-family: inherit; font-size: 14px; font-weight: 700;
+  color: #fff; cursor: pointer; transition: opacity .15s;
+}
+[data-theme="dark"] .btn-confirm { color: var(--ink); }
+.btn-confirm:hover { opacity: .85; }
 .btn-sos-confirm {
   flex: 1; padding: 12px; border-radius: 12px;
   background: var(--red); border: 0;
@@ -366,13 +494,29 @@ body {
   color: #fff; cursor: pointer;
 }
 
-/* ============================================================
-   PAY DIALOG
-   ============================================================ */
-.pay-dialog { text-align: center; }
-.pay-dialog .pay-emoji { font-size: 44px; margin-bottom: 14px; }
-.pay-dialog h3 { font-family: 'Bricolage Grotesque'; font-size: 21px; font-weight: 700; margin-bottom: 8px; }
-.pay-dialog p { color: var(--muted); font-size: 14px; margin-bottom: 24px; line-height: 1.6; }
+/* booking dialog detail rows */
+.bk-detail {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 10px 14px; background: var(--bg); border-radius: 11px;
+  margin-bottom: 8px; text-align: left;
+}
+.bk-detail .bk-label { font-size: 12px; color: var(--muted); font-weight: 500; }
+.bk-detail .bk-val { font-size: 13.5px; font-weight: 700; }
+
+/* booking success state */
+.bk-success { display: none; }
+.bk-success.show { display: block; }
+.bk-pending { display: block; }
+.bk-pending.hide { display: none; }
+.bk-ref {
+  display: inline-block; margin: 12px 0;
+  padding: 8px 16px; background: var(--green-soft);
+  border-radius: 30px; color: var(--green);
+  font-weight: 700; font-size: 13px; letter-spacing: .04em;
+}
+
+/* SOS specific colour */
+#sos-dialog h3 { color: var(--red); }
 
 /* ============================================================
    FOOTER
@@ -383,20 +527,18 @@ body {
 }
 
 /* ============================================================
-   RESPONSIVE — wider screens get a nice centred card look
+   RESPONSIVE
    ============================================================ */
 @media (min-width: 720px) {
-  #home-view {
-    padding-top: 24px;
-  }
-  .greeting { padding-top: 10px; }
+  #home-view, #amen-view { padding-top: 20px; }
+  .greeting, .amen-head { padding-top: 10px; }
 }
 </style>
 </head>
 <body>
 
 <!-- ═══════════════════════════════════════
-     TOP BAR — visible on both screens
+     TOP BAR
      ═══════════════════════════════════════ -->
 <header class="topbar">
   <div class="topbar-inner">
@@ -407,18 +549,32 @@ body {
         <small id="tagline">Community living, connected</small>
       </div>
     </div>
-
-    <!-- language toggle -->
     <div class="seg" id="lang-seg">
       <button data-l="en" class="on">EN</button>
       <button data-l="hi">हिं</button>
       <button data-l="mr">मरा</button>
     </div>
-
-    <!-- theme toggle -->
     <button class="icon-btn" id="theme-btn" title="Toggle light / dark">◐</button>
   </div>
 </header>
+
+<!-- ═══════════════════════════════════════
+     BOTTOM NAV (hidden until logged in)
+     ═══════════════════════════════════════ -->
+<nav class="bottom-nav" id="bottom-nav">
+  <button data-screen="home" class="on">
+    <span class="ni">⌂</span><span id="nav-home">Home</span>
+  </button>
+  <button data-screen="amen">
+    <span class="ni">▦</span><span id="nav-amen">Amenities</span>
+  </button>
+  <button data-screen="gate">
+    <span class="ni">🪪</span><span id="nav-gate">Gate</span>
+  </button>
+  <button data-screen="help">
+    <span class="ni">✎</span><span id="nav-help">Help</span>
+  </button>
+</nav>
 
 <!-- ═══════════════════════════════════════
      LOGIN VIEW
@@ -432,11 +588,9 @@ body {
         <small>Jubilee Hills, Baner · Pune</small>
       </div>
     </div>
-
     <h2 id="login-title">Welcome back</h2>
     <p id="login-sub">Enter your registered mobile number to continue.</p>
 
-    <!-- step 1 — phone -->
     <div id="step-phone">
       <label class="field-label" id="phone-label" for="phone-input">Mobile number</label>
       <div class="phone-wrap">
@@ -447,7 +601,6 @@ body {
       <button class="btn-primary" style="margin-top:18px" id="send-otp-btn">Send OTP</button>
     </div>
 
-    <!-- step 2 — OTP -->
     <div class="otp-row" id="step-otp">
       <p class="otp-hint" id="otp-hint">We've sent a 4-digit code to <b id="otp-phone"></b></p>
       <div class="otp-inputs">
@@ -469,8 +622,6 @@ body {
      HOME VIEW
      ═══════════════════════════════════════ -->
 <div id="home-view" class="view">
-
-  <!-- Greeting -->
   <div class="greeting">
     <div class="avatar">SM</div>
     <div class="greet-text">
@@ -480,10 +631,7 @@ body {
     <div class="weather-pill">⛅ 28° Pune</div>
   </div>
 
-  <!-- Content area -->
-  <div class="max" style="padding-top: 20px;">
-
-    <!-- Dues card -->
+  <div class="max" style="padding-top:20px">
     <div class="card dues-card">
       <div class="dues-lbl" id="dues-lbl">Maintenance due</div>
       <div class="dues-amt">₹ 4,200</div>
@@ -491,30 +639,23 @@ body {
       <button class="pay-btn" id="pay-btn">Pay now via UPI</button>
     </div>
 
-    <!-- Quick actions -->
     <div class="quick-actions">
       <button class="qa-btn" onclick="alert('Visitor pass — coming soon!')">
-        <span class="qa-icon">🪪</span>
-        <span id="qa-visitor">Visitor</span>
+        <span class="qa-icon">🪪</span><span id="qa-visitor">Visitor</span>
       </button>
-      <button class="qa-btn" onclick="alert('Amenity booking — coming soon!')">
-        <span class="qa-icon">📅</span>
-        <span id="qa-book">Book</span>
+      <button class="qa-btn" onclick="showScreen('amen')">
+        <span class="qa-icon">📅</span><span id="qa-book">Book</span>
       </button>
       <button class="qa-btn" onclick="alert('Complaint — coming soon!')">
-        <span class="qa-icon">🛠️</span>
-        <span id="qa-complaint">Complaint</span>
+        <span class="qa-icon">🛠️</span><span id="qa-complaint">Complaint</span>
       </button>
       <button class="qa-btn" onclick="alert('Delivery — coming soon!')">
-        <span class="qa-icon">📦</span>
-        <span id="qa-delivery">Delivery</span>
+        <span class="qa-icon">📦</span><span id="qa-delivery">Delivery</span>
       </button>
     </div>
 
-    <!-- Notice board -->
     <div class="card">
       <div class="sec-title" id="notice-title">Notice board</div>
-
       <div class="notice-row">
         <div class="dot" style="background:var(--red)"></div>
         <div>
@@ -523,7 +664,6 @@ body {
         </div>
         <div class="notice-time">1h</div>
       </div>
-
       <div class="notice-row">
         <div class="dot" style="background:var(--brass)"></div>
         <div>
@@ -532,7 +672,6 @@ body {
         </div>
         <div class="notice-time">3h</div>
       </div>
-
       <div class="notice-row">
         <div class="dot" style="background:var(--green)"></div>
         <div>
@@ -543,10 +682,9 @@ body {
       </div>
     </div>
 
-    <!-- SOS -->
-    <div class="sos-strip">
+    <div class="sos-strip" id="sos-strip">
       <div class="sos-text">
-        <b>SOS</b>
+        <b id="sos-label">SOS</b>
         <small id="sos-sub">Hold for emergency — guards alerted instantly</small>
       </div>
       <button class="sos-btn" id="sos-btn">HOLD</button>
@@ -557,11 +695,69 @@ body {
 </div>
 
 <!-- ═══════════════════════════════════════
+     AMENITIES VIEW
+     ═══════════════════════════════════════ -->
+<div id="amen-view" class="view">
+  <div class="amen-head">
+    <div>
+      <div class="amen-head-lbl" id="amen-lbl">Book amenity</div>
+      <div class="amen-head-name" id="amen-name">Multipurpose Hall</div>
+    </div>
+    <div class="fee-pill" id="amen-fee">₹150/hr</div>
+  </div>
+
+  <!-- Amenity chips -->
+  <div class="amen-selector-wrap">
+    <div class="amen-selector" id="amen-chips">
+      <button class="amen-chip on" data-ai="0"><span class="chip-icon">🏛️</span><span id="ac0">Multipurpose Hall</span></button>
+      <button class="amen-chip" data-ai="1"><span class="chip-icon">🎉</span><span id="ac1">Party Hall</span></button>
+      <button class="amen-chip" data-ai="2"><span class="chip-icon">🏊</span><span id="ac2">Swimming Pool</span></button>
+      <button class="amen-chip" data-ai="3"><span class="chip-icon">💪</span><span id="ac3">Gym</span></button>
+      <button class="amen-chip" data-ai="4"><span class="chip-icon">🏡</span><span id="ac4">Clubhouse</span></button>
+    </div>
+  </div>
+
+  <div class="max" style="padding-top:8px">
+    <!-- Week strip -->
+    <div class="week-strip" id="week-strip"></div>
+
+    <!-- Slots -->
+    <div class="sec-title" id="slots-title">Monday · slots</div>
+    <div id="slot-list"></div>
+
+    <!-- Rules -->
+    <div class="card" style="margin-top:4px">
+      <div style="display:flex;gap:10px;align-items:flex-start">
+        <span style="font-size:16px;margin-top:1px">ℹ️</span>
+        <p style="font-size:12.5px;color:var(--muted);line-height:1.65" id="amen-rule">
+          Rule: max 2 hrs/day per flat · cancel at least 2 hrs before your slot for a full refund.
+        </p>
+      </div>
+    </div>
+
+    <!-- My bookings -->
+    <div class="sec-title" style="margin-top:6px" id="my-bk-title">My bookings</div>
+    <div class="card">
+      <div class="booking-row">
+        <div class="booking-icon">🏛️</div>
+        <div>
+          <div class="booking-name" id="bk-name-1">Multipurpose Hall</div>
+          <div class="booking-when" id="bk-when-1">Sat 20 Jun · 06:00 – 07:00</div>
+        </div>
+        <div class="booking-ref">JH-B-0042</div>
+      </div>
+    </div>
+
+    <div class="footer">Jubilee Hills Connect · demo prototype · Baner, Pune</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
      SOS DIALOG
      ═══════════════════════════════════════ -->
 <div class="overlay" id="sos-overlay">
-  <div class="dialog">
-    <div class="sos-emoji">🚨</div>
+  <div class="dialog" id="sos-dialog">
+    <div class="dlg-emoji">🚨</div>
     <h3 id="sos-dlg-title">Send SOS alert?</h3>
     <p id="sos-dlg-body">
       This will instantly alert all security guards and the committee with your flat number and location.
@@ -577,14 +773,59 @@ body {
      PAY DIALOG
      ═══════════════════════════════════════ -->
 <div class="overlay" id="pay-overlay">
-  <div class="dialog pay-dialog">
-    <div class="pay-emoji">💳</div>
+  <div class="dialog">
+    <div class="dlg-emoji">💳</div>
     <h3 id="pay-dlg-title">UPI payment</h3>
     <p id="pay-dlg-body">
       UPI integration with Razorpay is coming in the next build. For now this is a demo — no real payment is made.
     </p>
     <div class="dialog-btns">
       <button class="btn-cancel" id="pay-close">Got it</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     BOOKING DIALOG
+     ═══════════════════════════════════════ -->
+<div class="overlay" id="bk-overlay">
+  <div class="dialog">
+    <!-- Pending state -->
+    <div class="bk-pending" id="bk-pending">
+      <div class="dlg-emoji">📅</div>
+      <h3 id="bk-dlg-title">Confirm booking</h3>
+      <div style="margin-bottom:20px">
+        <div class="bk-detail">
+          <span class="bk-label" id="bk-row-amen">Amenity</span>
+          <span class="bk-val" id="bk-val-amen">Multipurpose Hall</span>
+        </div>
+        <div class="bk-detail">
+          <span class="bk-label" id="bk-row-date">Date</span>
+          <span class="bk-val" id="bk-val-date">Mon, 15 Jun</span>
+        </div>
+        <div class="bk-detail">
+          <span class="bk-label" id="bk-row-time">Time</span>
+          <span class="bk-val" id="bk-val-time">06:00 – 07:00</span>
+        </div>
+        <div class="bk-detail">
+          <span class="bk-label" id="bk-row-fee">Fee</span>
+          <span class="bk-val" id="bk-val-fee">₹150</span>
+        </div>
+      </div>
+      <div class="dialog-btns">
+        <button class="btn-cancel" id="bk-cancel">Cancel</button>
+        <button class="btn-confirm" id="bk-confirm">Confirm</button>
+      </div>
+    </div>
+    <!-- Success state -->
+    <div class="bk-success" id="bk-success">
+      <div class="dlg-emoji">✅</div>
+      <h3 id="bk-ok-title" style="color:var(--green)">Booked!</h3>
+      <p id="bk-ok-body">Your slot is confirmed. Show this reference at the amenity entrance.</p>
+      <div class="bk-ref" id="bk-ref-no">JH-B-0043</div>
+      <div class="dialog-btns" style="margin-top:20px">
+        <button class="btn-confirm" id="bk-done">Done</button>
+      </div>
     </div>
   </div>
 </div>
@@ -602,115 +843,181 @@ document.getElementById('theme-btn').addEventListener('click', function () {
 });
 
 /* ────────────────────────────────────────
-   LANGUAGE / i18n
+   SCREEN SWITCHING
+   ──────────────────────────────────────── */
+function showScreen(name) {
+  // Views
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  const target = document.getElementById(name + '-view');
+  if (target) {
+    target.classList.add('active');
+    window.scrollTo(0, 0);
+  }
+  // Nav buttons
+  document.querySelectorAll('#bottom-nav button').forEach(b => {
+    b.classList.toggle('on', b.dataset.screen === name);
+  });
+  // Stub screens
+  if (name === 'gate' || name === 'help') {
+    showStub(name);
+  }
+}
+
+function showStub(name) {
+  const labels = {
+    gate: { en: 'Gate Pass', hi: 'गेट पास', mr: 'गेट पास' },
+    help: { en: 'Help Desk', hi: 'हेल्प डेस्क', mr: 'हेल्प डेस्क' }
+  };
+  const lbl = labels[name][currentLang] || labels[name].en;
+  // reuse gate/help as stubs — show a placeholder if no dedicated view
+  let view = document.getElementById(name + '-view');
+  if (!view) {
+    view = document.createElement('div');
+    view.id = name + '-view';
+    view.className = 'view';
+    document.body.appendChild(view);
+  }
+  view.innerHTML = `
+    <div style="max-width:var(--max);margin:0 auto;padding:60px 24px;text-align:center">
+      <div style="font-size:52px;margin-bottom:16px">${name === 'gate' ? '🪪' : '🛠️'}</div>
+      <h2 style="font-family:'Bricolage Grotesque';font-size:22px;margin-bottom:8px">${lbl}</h2>
+      <p style="color:var(--muted);font-size:14px">This screen is coming in the next build.</p>
+    </div>`;
+  view.classList.add('active');
+}
+
+/* bottom nav clicks */
+document.querySelectorAll('#bottom-nav button').forEach(btn => {
+  btn.addEventListener('click', () => showScreen(btn.dataset.screen));
+});
+
+/* ────────────────────────────────────────
+   i18n
    ──────────────────────────────────────── */
 const strings = {
   en: {
-    tagline:      'Community living, connected',
-    'login-title':'Welcome back',
-    'login-sub':  'Enter your registered mobile number to continue.',
-    'phone-label':'Mobile number',
-    'otp-hint':   "We've sent a 4-digit code to ",
-    'login-note': 'This is a demo — any mobile number and any 4-digit code will work.',
-    'greet-hi':   'Good morning,',
-    'dues-lbl':   'Maintenance due',
-    'dues-due':   'Due 5 July 2026 · June quarter',
-    'pay-btn':    'Pay now via UPI',
-    'qa-visitor': 'Visitor',
-    'qa-book':    'Book',
-    'qa-complaint':'Complaint',
-    'qa-delivery':'Delivery',
-    'notice-title':'Notice board',
-    'n1':         'Water tanker — Tower A, 2 PM',
-    'n1s':        'Supply maintenance · committee',
-    'n2':         'Ganeshotsav planning meet',
-    'n2s':        'Clubhouse · Sat 7 PM',
-    'n3':         'Pool reopens after cleaning',
-    'n3s':        '6 AM – 9 PM slots open',
-    'sos-sub':    'Hold for emergency — guards alerted instantly',
+    tagline:         'Community living, connected',
+    'login-title':   'Welcome back',
+    'login-sub':     'Enter your registered mobile number to continue.',
+    'phone-label':   'Mobile number',
+    'otp-hint':      "We've sent a 4-digit code to ",
+    'login-note':    'This is a demo — any mobile number and any 4-digit code will work.',
+    'greet-hi':      'Good morning,',
+    'dues-lbl':      'Maintenance due',
+    'dues-due':      'Due 5 July 2026 · June quarter',
+    'pay-btn':       'Pay now via UPI',
+    'qa-visitor':    'Visitor',
+    'qa-book':       'Book',
+    'qa-complaint':  'Complaint',
+    'qa-delivery':   'Delivery',
+    'notice-title':  'Notice board',
+    'n1':            'Water tanker — Tower A, 2 PM',
+    'n1s':           'Supply maintenance · committee',
+    'n2':            'Ganeshotsav planning meet',
+    'n2s':           'Clubhouse · Sat 7 PM',
+    'n3':            'Pool reopens after cleaning',
+    'n3s':           '6 AM – 9 PM slots open',
+    'sos-sub':       'Hold for emergency — guards alerted instantly',
     'sos-dlg-title': 'Send SOS alert?',
     'sos-dlg-body':  'This will instantly alert all security guards and the committee with your flat number and location.',
     'pay-dlg-title': 'UPI payment',
     'pay-dlg-body':  'UPI integration with Razorpay is coming in the next build. For now this is a demo — no real payment is made.',
-    'footer-text':'Jubilee Hills Connect · demo prototype · Baner, Pune',
-    'send-otp-btn':'Send OTP',
-    'verify-otp-btn':'Continue',
-    'btn-cancel':'Cancel',
-    'btn-cancel-pay':'Got it',
-    'sos-confirm':'Alert now',
+    'footer-text':   'Jubilee Hills Connect · demo prototype · Baner, Pune',
+    // nav
+    'nav-home':  'Home', 'nav-amen': 'Amenities', 'nav-gate': 'Gate', 'nav-help': 'Help',
+    // amenities
+    'amen-lbl':   'Book amenity',
+    'ac0': 'Multipurpose Hall', 'ac1': 'Party Hall', 'ac2': 'Swimming Pool', 'ac3': 'Gym', 'ac4': 'Clubhouse',
+    'amen-rule':  'Rule: max 2 hrs/day per flat · cancel at least 2 hrs before your slot for a full refund.',
+    'my-bk-title': 'My bookings',
+    'bk-name-1':  'Multipurpose Hall', 'bk-when-1': 'Sat 20 Jun · 06:00 – 07:00',
+    // booking dialog
+    'bk-dlg-title': 'Confirm booking',
+    'bk-row-amen': 'Amenity', 'bk-row-date': 'Date', 'bk-row-time': 'Time', 'bk-row-fee': 'Fee',
+    'bk-ok-title': 'Booked!',
+    'bk-ok-body':  'Your slot is confirmed. Show this reference at the amenity entrance.',
   },
   hi: {
-    tagline:      'समुदाय जीवन, जुड़ा हुआ',
-    'login-title':'वापस स्वागत है',
-    'login-sub':  'जारी रखने के लिए अपना पंजीकृत मोबाइल नंबर दर्ज करें।',
-    'phone-label':'मोबाइल नंबर',
-    'otp-hint':   "हमने 4-अंकीय कोड भेजा है ",
-    'login-note': 'यह एक डेमो है — कोई भी मोबाइल नंबर और कोई भी 4-अंकीय कोड काम करेगा।',
-    'greet-hi':   'सुप्रभात,',
-    'dues-lbl':   'रखरखाव बकाया',
-    'dues-due':   'देय 5 जुलाई 2026 · जून तिमाही',
-    'pay-btn':    'UPI से अभी भुगतान करें',
-    'qa-visitor': 'आगंतुक',
-    'qa-book':    'बुक',
-    'qa-complaint':'शिकायत',
-    'qa-delivery':'डिलीवरी',
-    'notice-title':'सूचना बोर्ड',
-    'n1':         'पानी का टैंकर — टावर A, 2 बजे',
-    'n1s':        'आपूर्ति रखरखाव · समिति',
-    'n2':         'गणेशोत्सव बैठक',
-    'n2s':        'क्लबहाउस · शनि 7 बजे',
-    'n3':         'सफाई के बाद पूल खुला',
-    'n3s':        'सुबह 6 – रात 9 स्लॉट खुले',
-    'sos-sub':    'आपात स्थिति में दबाए रखें — गार्ड तुरंत सूचित',
+    tagline:         'समुदाय जीवन, जुड़ा हुआ',
+    'login-title':   'वापस स्वागत है',
+    'login-sub':     'जारी रखने के लिए अपना पंजीकृत मोबाइल नंबर दर्ज करें।',
+    'phone-label':   'मोबाइल नंबर',
+    'otp-hint':      "हमने 4-अंकीय कोड भेजा है ",
+    'login-note':    'यह एक डेमो है — कोई भी मोबाइल नंबर और कोई भी 4-अंकीय कोड काम करेगा।',
+    'greet-hi':      'सुप्रभात,',
+    'dues-lbl':      'रखरखाव बकाया',
+    'dues-due':      'देय 5 जुलाई 2026 · जून तिमाही',
+    'pay-btn':       'UPI से अभी भुगतान करें',
+    'qa-visitor':    'आगंतुक',
+    'qa-book':       'बुक',
+    'qa-complaint':  'शिकायत',
+    'qa-delivery':   'डिलीवरी',
+    'notice-title':  'सूचना बोर्ड',
+    'n1':            'पानी का टैंकर — टावर A, 2 बजे',
+    'n1s':           'आपूर्ति रखरखाव · समिति',
+    'n2':            'गणेशोत्सव बैठक',
+    'n2s':           'क्लबहाउस · शनि 7 बजे',
+    'n3':            'सफाई के बाद पूल खुला',
+    'n3s':           'सुबह 6 – रात 9 स्लॉट खुले',
+    'sos-sub':       'आपात स्थिति में दबाए रखें — गार्ड तुरंत सूचित',
     'sos-dlg-title': 'SOS अलर्ट भेजें?',
     'sos-dlg-body':  'यह आपके फ्लैट नंबर और स्थान के साथ सभी सुरक्षा गार्डों और समिति को तुरंत सूचित करेगा।',
     'pay-dlg-title': 'UPI भुगतान',
     'pay-dlg-body':  'Razorpay के साथ UPI एकीकरण अगले बिल्ड में आएगा। अभी के लिए यह एक डेमो है।',
-    'footer-text':'जुबली हिल्स कनेक्ट · डेमो प्रोटोटाइप · बाणेर, पुणे',
-    'send-otp-btn':'OTP भेजें',
-    'verify-otp-btn':'जारी रखें',
-    'btn-cancel':'रद्द करें',
-    'btn-cancel-pay':'समझ गया',
-    'sos-confirm':'अभी अलर्ट करें',
+    'footer-text':   'जुबली हिल्स कनेक्ट · डेमो प्रोटोटाइप · बाणेर, पुणे',
+    'nav-home':  'होम', 'nav-amen': 'सुविधाएँ', 'nav-gate': 'गेट', 'nav-help': 'हेल्प',
+    'amen-lbl':   'सुविधा बुक करें',
+    'ac0': 'मल्टीपर्पज़ हॉल', 'ac1': 'पार्टी हॉल', 'ac2': 'स्विमिंग पूल', 'ac3': 'जिम', 'ac4': 'क्लबहाउस',
+    'amen-rule':  'नियम: प्रति फ्लैट अधिकतम 2 घंटे/दिन · 2 घंटे पहले तक रद्द करने पर पूर्ण रिफंड।',
+    'my-bk-title': 'मेरी बुकिंग',
+    'bk-name-1':  'मल्टीपर्पज़ हॉल', 'bk-when-1': 'शनि 20 जून · 06:00 – 07:00',
+    'bk-dlg-title': 'बुकिंग की पुष्टि करें',
+    'bk-row-amen': 'सुविधा', 'bk-row-date': 'तारीख', 'bk-row-time': 'समय', 'bk-row-fee': 'शुल्क',
+    'bk-ok-title': 'बुक हो गया!',
+    'bk-ok-body':  'आपका स्लॉट पक्का हो गया है। सुविधा प्रवेश पर यह संदर्भ दिखाएं।',
   },
   mr: {
-    tagline:      'समुदाय जीवन, जोडलेले',
-    'login-title':'परत स्वागत आहे',
-    'login-sub':  'सुरू ठेवण्यासाठी तुमचा नोंदणीकृत मोबाइल नंबर प्रविष्ट करा।',
-    'phone-label':'मोबाइल नंबर',
-    'otp-hint':   "आम्ही 4-अंकी कोड पाठवला आहे ",
-    'login-note': 'हे एक डेमो आहे — कोणताही मोबाइल नंबर आणि कोणताही 4-अंकी कोड काम करेल.',
-    'greet-hi':   'सुप्रभात,',
-    'dues-lbl':   'देखभाल थकबाकी',
-    'dues-due':   'देय 5 जुलै 2026 · जून तिमाही',
-    'pay-btn':    'UPI ने आता भरा',
-    'qa-visitor': 'पाहुणे',
-    'qa-book':    'बुक',
-    'qa-complaint':'तक्रार',
-    'qa-delivery':'डिलिव्हरी',
-    'notice-title':'सूचना फलक',
-    'n1':         'पाण्याचा टँकर — टॉवर A, 2 वा.',
-    'n1s':        'पुरवठा देखभाल · समिती',
-    'n2':         'गणेशोत्सव बैठक',
-    'n2s':        'क्लबहाऊस · शनि 7 वा.',
-    'n3':         'स्वच्छतेनंतर तलाव सुरू',
-    'n3s':        'सकाळी 6 – रात्री 9 स्लॉट खुले',
-    'sos-sub':    'आणीबाणीसाठी दाबून ठेवा — सुरक्षा त्वरित सूचित',
+    tagline:         'समुदाय जीवन, जोडलेले',
+    'login-title':   'परत स्वागत आहे',
+    'login-sub':     'सुरू ठेवण्यासाठी तुमचा नोंदणीकृत मोबाइल नंबर प्रविष्ट करा।',
+    'phone-label':   'मोबाइल नंबर',
+    'otp-hint':      "आम्ही 4-अंकी कोड पाठवला आहे ",
+    'login-note':    'हे एक डेमो आहे — कोणताही मोबाइल नंबर आणि कोणताही 4-अंकी कोड काम करेल.',
+    'greet-hi':      'सुप्रभात,',
+    'dues-lbl':      'देखभाल थकबाकी',
+    'dues-due':      'देय 5 जुलै 2026 · जून तिमाही',
+    'pay-btn':       'UPI ने आता भरा',
+    'qa-visitor':    'पाहुणे',
+    'qa-book':       'बुक',
+    'qa-complaint':  'तक्रार',
+    'qa-delivery':   'डिलिव्हरी',
+    'notice-title':  'सूचना फलक',
+    'n1':            'पाण्याचा टँकर — टॉवर A, 2 वा.',
+    'n1s':           'पुरवठा देखभाल · समिती',
+    'n2':            'गणेशोत्सव बैठक',
+    'n2s':           'क्लबहाऊस · शनि 7 वा.',
+    'n3':            'स्वच्छतेनंतर तलाव सुरू',
+    'n3s':           'सकाळी 6 – रात्री 9 स्लॉट खुले',
+    'sos-sub':       'आणीबाणीसाठी दाबून ठेवा — सुरक्षा त्वरित सूचित',
     'sos-dlg-title': 'SOS अलर्ट पाठवायचा?',
     'sos-dlg-body':  'हे तुमच्या फ्लॅट नंबर आणि स्थानासह सर्व सुरक्षा रक्षकांना आणि समितीला त्वरित सूचित करेल.',
     'pay-dlg-title': 'UPI पेमेंट',
     'pay-dlg-body':  'Razorpay सह UPI एकत्रीकरण पुढील बिल्डमध्ये येईल. सध्या हे डेमो आहे.',
-    'footer-text':'जुबिली हिल्स कनेक्ट · डेमो प्रोटोटाइप · बाणेर, पुणे',
-    'send-otp-btn':'OTP पाठवा',
-    'verify-otp-btn':'सुरू ठेवा',
-    'btn-cancel':'रद्द करा',
-    'btn-cancel-pay':'समजले',
-    'sos-confirm':'आत्ता अलर्ट करा',
+    'footer-text':   'जुबिली हिल्स कनेक्ट · डेमो प्रोटोटाइप · बाणेर, पुणे',
+    'nav-home':  'होम', 'nav-amen': 'सुविधा', 'nav-gate': 'गेट', 'nav-help': 'हेल्प',
+    'amen-lbl':   'सुविधा बुक करा',
+    'ac0': 'मल्टीपर्पज हॉल', 'ac1': 'पार्टी हॉल', 'ac2': 'स्विमिंग पूल', 'ac3': 'जिम', 'ac4': 'क्लबहाऊस',
+    'amen-rule':  'नियम: प्रति फ्लॅट कमाल 2 तास/दिवस · 2 तास आधी रद्द केल्यास पूर्ण परतावा.',
+    'my-bk-title': 'माझ्या बुकिंग',
+    'bk-name-1':  'मल्टीपर्पज हॉल', 'bk-when-1': 'शनि 20 जून · 06:00 – 07:00',
+    'bk-dlg-title': 'बुकिंग निश्चित करा',
+    'bk-row-amen': 'सुविधा', 'bk-row-date': 'तारीख', 'bk-row-time': 'वेळ', 'bk-row-fee': 'शुल्क',
+    'bk-ok-title': 'बुक झाले!',
+    'bk-ok-body':  'तुमचा स्लॉट निश्चित झाला. सुविधा प्रवेशाच्या वेळी हा संदर्भ दाखवा.',
   }
 };
 
 let currentLang = 'en';
-
 function applyLang(l) {
   currentLang = l;
   const d = strings[l];
@@ -718,14 +1025,9 @@ function applyLang(l) {
     const el = document.getElementById(id);
     if (el) el.textContent = text;
   }
-  // buttons that use textContent but aren't ids
-  const sendBtn = document.getElementById('send-otp-btn');
-  if (sendBtn) sendBtn.textContent = d['send-otp-btn'];
-  const verifyBtn = document.getElementById('verify-otp-btn');
-  if (verifyBtn) verifyBtn.textContent = d['verify-otp-btn'];
-  const payBtn = document.getElementById('pay-btn');
-  if (payBtn) payBtn.textContent = d['pay-btn'];
   document.documentElement.lang = l;
+  // Refresh amenity head name after language switch
+  selectAmenity(currentAmenity);
 }
 
 document.querySelectorAll('#lang-seg button').forEach(btn => {
@@ -733,6 +1035,7 @@ document.querySelectorAll('#lang-seg button').forEach(btn => {
     document.querySelectorAll('#lang-seg button').forEach(b => b.classList.remove('on'));
     btn.classList.add('on');
     applyLang(btn.dataset.l);
+    renderSlots();
   });
 });
 
@@ -744,8 +1047,8 @@ let enteredPhone = '';
 document.getElementById('send-otp-btn').addEventListener('click', () => {
   const raw = document.getElementById('phone-input').value.replace(/\D/g,'');
   if (raw.length < 10) {
-    document.getElementById('phone-input').focus();
-    document.getElementById('phone-input').style.borderColor = 'var(--red)';
+    const inp = document.getElementById('phone-input');
+    inp.focus(); inp.style.borderColor = 'var(--red)';
     return;
   }
   document.getElementById('phone-input').style.borderColor = '';
@@ -753,11 +1056,9 @@ document.getElementById('send-otp-btn').addEventListener('click', () => {
   document.getElementById('otp-phone').textContent = '+91 ' + raw;
   document.getElementById('step-phone').style.display = 'none';
   document.getElementById('step-otp').classList.add('show');
-  // focus first OTP box
   document.querySelector('.otp-box').focus();
 });
 
-// OTP boxes — auto-advance
 document.querySelectorAll('.otp-box').forEach((box, i, all) => {
   box.addEventListener('input', () => {
     box.value = box.value.replace(/\D/,'').slice(-1);
@@ -772,14 +1073,167 @@ document.getElementById('verify-otp-btn').addEventListener('click', () => {
   const boxes = document.querySelectorAll('.otp-box');
   const code = Array.from(boxes).map(b => b.value).join('');
   if (code.length < 4) { boxes[0].focus(); return; }
-  // Any code works — this is a demo
   document.getElementById('login-view').classList.remove('active');
-  document.getElementById('home-view').classList.add('active');
+  document.body.classList.add('logged-in');
+  buildWeekStrip();
+  renderSlots();
+  showScreen('home');
 });
 
-// Also allow Enter key on phone input
 document.getElementById('phone-input').addEventListener('keydown', e => {
   if (e.key === 'Enter') document.getElementById('send-otp-btn').click();
+});
+
+/* ────────────────────────────────────────
+   AMENITIES DATA
+   ──────────────────────────────────────── */
+const AMENITIES = [
+  { key: 'ac0', fee: 150,  feeLabel: '₹150/hr', slots: ['06:00–07:00','07:00–08:00','08:00–09:00','17:00–18:00','18:00–19:00','19:00–20:00','20:00–21:00'] },
+  { key: 'ac1', fee: 200,  feeLabel: '₹200/hr', slots: ['10:00–12:00','12:00–14:00','14:00–16:00','16:00–18:00','18:00–20:00'] },
+  { key: 'ac2', fee: 100,  feeLabel: '₹100/hr', slots: ['06:00–07:00','07:00–08:00','08:00–09:00','17:00–18:00','18:00–19:00','19:00–20:00'] },
+  { key: 'ac3', fee: 0,    feeLabel: 'Free',     slots: ['05:00–06:00','06:00–07:00','07:00–08:00','17:00–18:00','18:00–19:00','19:00–20:00','20:00–21:00'] },
+  { key: 'ac4', fee: 75,   feeLabel: '₹75/hr',  slots: ['08:00–10:00','10:00–12:00','14:00–16:00','16:00–18:00','18:00–20:00'] },
+];
+
+/* deterministic slot status — same amenity+day+slot always gives same result */
+function slotStatus(ai, dayOff, si) {
+  const n = (ai * 31 + dayOff * 11 + si * 7) % 10;
+  return n < 3 ? 'full' : 'free';
+}
+
+let currentAmenity = 0;
+let currentDayOffset = 0; // 0 = today
+let weekDates = [];        // Date objects for the 7 displayed days
+
+const DAY_NAMES_EN  = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+const DAY_NAMES_HI  = ['रवि','सोम','मंगल','बुध','गुरु','शुक्र','शनि'];
+const DAY_NAMES_MR  = ['रवि','सोम','मंगळ','बुध','गुरु','शुक्र','शनि'];
+const MONTH_EN      = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const MONTH_HI      = ['जन','फर','मार','अप्र','मई','जून','जुल','अग','सित','अक्ट','नव','दिस'];
+const MONTH_MR      = ['जाने','फेब्र','मार्च','एप्रि','मे','जून','जुलै','ऑग','सप्टें','ऑक्ट','नोव्ह','डिस'];
+
+function buildWeekStrip() {
+  const strip = document.getElementById('week-strip');
+  strip.innerHTML = '';
+  const today = new Date();
+  today.setHours(0,0,0,0);
+  weekDates = [];
+
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(today);
+    d.setDate(today.getDate() + i);
+    weekDates.push(d);
+
+    const btn = document.createElement('button');
+    btn.className = 'day-btn' + (i === 0 ? ' today on' : '');
+    btn.dataset.offset = i;
+
+    const dayNames = currentLang === 'hi' ? DAY_NAMES_HI : currentLang === 'mr' ? DAY_NAMES_MR : DAY_NAMES_EN;
+    btn.innerHTML = `<span class="dn">${dayNames[d.getDay()]}</span><span class="dd">${d.getDate()}</span>`;
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.day-btn').forEach(b => b.classList.remove('on'));
+      btn.classList.add('on');
+      currentDayOffset = i;
+      renderSlots();
+    });
+    strip.appendChild(btn);
+  }
+}
+
+function renderSlots() {
+  const list = document.getElementById('slot-list');
+  const title = document.getElementById('slots-title');
+  const amen = AMENITIES[currentAmenity];
+  const d = weekDates[currentDayOffset];
+  if (!d) return;
+
+  const dayNames = currentLang === 'hi' ? DAY_NAMES_HI : currentLang === 'mr' ? DAY_NAMES_MR : DAY_NAMES_EN;
+  const months   = currentLang === 'hi' ? MONTH_HI : currentLang === 'mr' ? MONTH_MR : MONTH_EN;
+  const dayLabel = `${dayNames[d.getDay()]} ${d.getDate()} ${months[d.getMonth()]}`;
+  const slotsWord = currentLang === 'hi' ? 'स्लॉट' : currentLang === 'mr' ? 'स्लॉट' : 'slots';
+  title.textContent = `${dayLabel} · ${slotsWord}`;
+
+  const openWord  = currentLang === 'hi' ? 'खुला' : currentLang === 'mr' ? 'उपलब्ध' : 'Open';
+  const fullWord  = currentLang === 'hi' ? 'भरा'  : currentLang === 'mr' ? 'भरले'   : 'Full';
+  const bookWord  = currentLang === 'hi' ? 'बुक'  : currentLang === 'mr' ? 'बुक'    : 'Book';
+  const waitWord  = currentLang === 'hi' ? 'वेटलिस्ट' : currentLang === 'mr' ? 'वेटलिस्ट' : 'Waitlist';
+
+  list.innerHTML = amen.slots.map((time, si) => {
+    const status = slotStatus(currentAmenity, currentDayOffset, si);
+    const avail  = status === 'free' ? openWord : fullWord;
+    const btnTxt = status === 'free' ? bookWord : waitWord;
+    const clickAttr = status === 'free'
+      ? `onclick="openBookingDialog(${currentAmenity},${currentDayOffset},'${time}')"`
+      : '';
+    return `
+      <div class="slot-item ${status}">
+        <span class="slot-time">${time}</span>
+        <span class="slot-avail">${avail}</span>
+        <button class="slot-bk-btn" ${clickAttr}>${btnTxt}</button>
+      </div>`;
+  }).join('');
+}
+
+/* amenity chip selection */
+function selectAmenity(idx) {
+  currentAmenity = idx;
+  document.querySelectorAll('.amen-chip').forEach(c => c.classList.toggle('on', +c.dataset.ai === idx));
+
+  const d = strings[currentLang];
+  const nameKey = AMENITIES[idx].key;
+  document.getElementById('amen-name').textContent = d[nameKey] || document.getElementById(nameKey)?.textContent || '';
+  document.getElementById('amen-fee').textContent = AMENITIES[idx].feeLabel;
+  renderSlots();
+}
+
+document.querySelectorAll('.amen-chip').forEach(chip => {
+  chip.addEventListener('click', () => selectAmenity(+chip.dataset.ai));
+});
+
+/* ────────────────────────────────────────
+   BOOKING DIALOG
+   ──────────────────────────────────────── */
+let bookingCounter = 43;
+
+function openBookingDialog(ai, dayOff, time) {
+  const d = strings[currentLang];
+  const months = currentLang === 'hi' ? MONTH_HI : currentLang === 'mr' ? MONTH_MR : MONTH_EN;
+  const dayNames = currentLang === 'hi' ? DAY_NAMES_HI : currentLang === 'mr' ? DAY_NAMES_MR : DAY_NAMES_EN;
+  const date = weekDates[dayOff];
+  const dateStr = `${dayNames[date.getDay()]} ${date.getDate()} ${months[date.getMonth()]}`;
+  const amen = AMENITIES[ai];
+  const amenName = d[amen.key] || document.getElementById(amen.key)?.textContent || '';
+
+  document.getElementById('bk-val-amen').textContent = amenName;
+  document.getElementById('bk-val-date').textContent = dateStr;
+  document.getElementById('bk-val-time').textContent = time;
+  document.getElementById('bk-val-fee').textContent = amen.fee === 0
+    ? (currentLang === 'hi' ? 'निःशुल्क' : currentLang === 'mr' ? 'मोफत' : 'Free')
+    : `₹${amen.fee}`;
+
+  // Reset to pending state
+  document.getElementById('bk-pending').classList.remove('hide');
+  document.getElementById('bk-success').classList.remove('show');
+  document.getElementById('bk-overlay').classList.add('open');
+}
+
+document.getElementById('bk-cancel').addEventListener('click', () => {
+  document.getElementById('bk-overlay').classList.remove('open');
+});
+
+document.getElementById('bk-confirm').addEventListener('click', () => {
+  const refNo = 'JH-B-' + String(bookingCounter++).padStart(4, '0');
+  document.getElementById('bk-ref-no').textContent = refNo;
+  document.getElementById('bk-pending').classList.add('hide');
+  document.getElementById('bk-success').classList.add('show');
+});
+
+document.getElementById('bk-done').addEventListener('click', () => {
+  document.getElementById('bk-overlay').classList.remove('open');
+});
+
+document.getElementById('bk-overlay').addEventListener('click', e => {
+  if (e.target === e.currentTarget) document.getElementById('bk-overlay').classList.remove('open');
 });
 
 /* ────────────────────────────────────────
@@ -793,22 +1247,18 @@ document.getElementById('sos-cancel').addEventListener('click', () => {
 });
 document.getElementById('sos-confirm').addEventListener('click', () => {
   document.getElementById('sos-overlay').classList.remove('open');
-  // Show a brief feedback
-  const strip = document.querySelector('.sos-strip');
-  strip.style.background = 'var(--green-soft)';
-  strip.style.borderColor = 'var(--green)';
-  const txt = strip.querySelector('.sos-text b');
-  const oldText = txt.textContent;
-  txt.textContent = '✓ Guards alerted';
-  txt.style.color = 'var(--green)';
+  const strip = document.getElementById('sos-strip');
+  const lbl   = document.getElementById('sos-label');
+  strip.style.background   = 'var(--green-soft)';
+  strip.style.borderColor  = 'var(--green)';
+  const prev = lbl.textContent;
+  lbl.textContent  = '✓ Guards alerted';
+  lbl.style.color  = 'var(--green)';
   setTimeout(() => {
-    strip.style.background = '';
-    strip.style.borderColor = '';
-    txt.textContent = oldText;
-    txt.style.color = '';
+    strip.style.background = strip.style.borderColor = '';
+    lbl.textContent = prev; lbl.style.color = '';
   }, 3500);
 });
-// close overlays on backdrop click
 document.getElementById('sos-overlay').addEventListener('click', e => {
   if (e.target === e.currentTarget) document.getElementById('sos-overlay').classList.remove('open');
 });
