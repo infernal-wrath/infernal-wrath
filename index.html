@@ -967,7 +967,7 @@ body.in-admin .bottom-nav { display: none !important; }
     <div class="avatar">SM</div>
     <div class="greet-text">
       <div class="hi" id="greet-hi">Good morning,</div>
-      <div class="name">Shriram · A-1203</div>
+      <div class="name" id="greet-name">Shriram · A-1203</div>
     </div>
     <div class="weather-pill">⛅ 28° Pune</div>
   </div>
@@ -2017,7 +2017,9 @@ function loginSuccess(userData) {
   document.getElementById('login-view').classList.remove('active');
   document.body.classList.add('logged-in');
   if (userData && userData.name && userData.name !== 'Resident') {
-    document.getElementById('greet-name').textContent = userData.name.split(' ')[0];
+    const firstName = userData.name.split(' ')[0];
+    const flat = userData.flat || 'A-1203';
+    document.getElementById('greet-name').textContent = firstName + ' · ' + flat;
   }
   buildWeekStrip();
   renderSlots();
