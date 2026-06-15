@@ -981,13 +981,13 @@ body.in-admin .bottom-nav { display: none !important; }
     </div>
 
     <div class="quick-actions">
-      <button class="qa-btn" onclick="alert('Visitor pass — coming soon!')">
+      <button class="qa-btn" onclick="document.getElementById('np-name').value='';document.getElementById('np-phone').value='';document.getElementById('np-from').value='14:00';document.getElementById('np-until').value='18:00';document.getElementById('np-gate').value='main';document.getElementById('np-name').style.borderColor='';document.getElementById('np-pending').classList.remove('hide');document.getElementById('np-success').classList.remove('show');document.getElementById('new-pass-overlay').classList.add('open')">
         <span class="qa-icon">🪪</span><span id="qa-visitor">Visitor</span>
       </button>
       <button class="qa-btn" onclick="showScreen('amen')">
         <span class="qa-icon">📅</span><span id="qa-book">Book</span>
       </button>
-      <button class="qa-btn" onclick="alert('Complaint — coming soon!')">
+      <button class="qa-btn" onclick="document.getElementById('raise-cat').value='';document.getElementById('raise-title-input').value='';document.getElementById('raise-desc-input').value='';document.getElementById('raise-cat').style.borderColor='';document.getElementById('raise-title-input').style.borderColor='';document.getElementById('raise-pending').classList.remove('hide');document.getElementById('raise-success').classList.remove('show');document.getElementById('raise-overlay').classList.add('open')">
         <span class="qa-icon">🛠️</span><span id="qa-complaint">Complaint</span>
       </button>
       <button class="qa-btn" onclick="showScreen('delivery')">
