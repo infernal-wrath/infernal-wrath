@@ -710,7 +710,7 @@ body.logged-in .bottom-nav { display: flex; }
   <div class="amen-selector-wrap">
     <div class="amen-selector" id="amen-chips">
       <button class="amen-chip on" data-ai="0"><span class="chip-icon">🏛️</span><span id="ac0">Multipurpose Hall</span></button>
-      <button class="amen-chip" data-ai="1"><span class="chip-icon">🎉</span><span id="ac1">Party Hall</span></button>
+      <button class="amen-chip" data-ai="1"><span class="chip-icon">🎉</span><span id="ac1">Party Place - 18th Floor</span></button>
       <button class="amen-chip" data-ai="2"><span class="chip-icon">🏊</span><span id="ac2">Swimming Pool</span></button>
       <button class="amen-chip" data-ai="3"><span class="chip-icon">💪</span><span id="ac3">Gym</span></button>
       <button class="amen-chip" data-ai="4"><span class="chip-icon">🏡</span><span id="ac4">Clubhouse</span></button>
@@ -927,7 +927,7 @@ const strings = {
     'nav-home':  'Home', 'nav-amen': 'Amenities', 'nav-gate': 'Gate', 'nav-help': 'Help',
     // amenities
     'amen-lbl':   'Book amenity',
-    'ac0': 'Multipurpose Hall', 'ac1': 'Party Hall', 'ac2': 'Swimming Pool', 'ac3': 'Gym', 'ac4': 'Clubhouse',
+    'ac0': 'Multipurpose Hall', 'ac1': 'Party Place - 18th Floor', 'ac2': 'Swimming Pool', 'ac3': 'Gym', 'ac4': 'Clubhouse',
     'amen-rule':  'Rule: max 2 hrs/day per flat · cancel at least 2 hrs before your slot for a full refund.',
     'my-bk-title': 'My bookings',
     'bk-name-1':  'Multipurpose Hall', 'bk-when-1': 'Sat 20 Jun · 06:00 – 07:00',
@@ -967,7 +967,7 @@ const strings = {
     'footer-text':   'जुबली हिल्स कनेक्ट · डेमो प्रोटोटाइप · बाणेर, पुणे',
     'nav-home':  'होम', 'nav-amen': 'सुविधाएँ', 'nav-gate': 'गेट', 'nav-help': 'हेल्प',
     'amen-lbl':   'सुविधा बुक करें',
-    'ac0': 'मल्टीपर्पज़ हॉल', 'ac1': 'पार्टी हॉल', 'ac2': 'स्विमिंग पूल', 'ac3': 'जिम', 'ac4': 'क्लबहाउस',
+    'ac0': 'मल्टीपर्पज़ हॉल', 'ac1': 'पार्टी प्लेस - 18वीं मंज़िल', 'ac2': 'स्विमिंग पूल', 'ac3': 'जिम', 'ac4': 'क्लबहाउस',
     'amen-rule':  'नियम: प्रति फ्लैट अधिकतम 2 घंटे/दिन · 2 घंटे पहले तक रद्द करने पर पूर्ण रिफंड।',
     'my-bk-title': 'मेरी बुकिंग',
     'bk-name-1':  'मल्टीपर्पज़ हॉल', 'bk-when-1': 'शनि 20 जून · 06:00 – 07:00',
@@ -1006,7 +1006,7 @@ const strings = {
     'footer-text':   'जुबिली हिल्स कनेक्ट · डेमो प्रोटोटाइप · बाणेर, पुणे',
     'nav-home':  'होम', 'nav-amen': 'सुविधा', 'nav-gate': 'गेट', 'nav-help': 'हेल्प',
     'amen-lbl':   'सुविधा बुक करा',
-    'ac0': 'मल्टीपर्पज हॉल', 'ac1': 'पार्टी हॉल', 'ac2': 'स्विमिंग पूल', 'ac3': 'जिम', 'ac4': 'क्लबहाऊस',
+    'ac0': 'मल्टीपर्पज हॉल', 'ac1': 'पार्टी प्लेस - 18वा मजला', 'ac2': 'स्विमिंग पूल', 'ac3': 'जिम', 'ac4': 'क्लबहाऊस',
     'amen-rule':  'नियम: प्रति फ्लॅट कमाल 2 तास/दिवस · 2 तास आधी रद्द केल्यास पूर्ण परतावा.',
     'my-bk-title': 'माझ्या बुकिंग',
     'bk-name-1':  'मल्टीपर्पज हॉल', 'bk-when-1': 'शनि 20 जून · 06:00 – 07:00',
@@ -1089,10 +1089,10 @@ document.getElementById('phone-input').addEventListener('keydown', e => {
    ──────────────────────────────────────── */
 const AMENITIES = [
   { key: 'ac0', fee: 150,  feeLabel: '₹150/hr', slots: ['06:00–07:00','07:00–08:00','08:00–09:00','17:00–18:00','18:00–19:00','19:00–20:00','20:00–21:00'] },
-  { key: 'ac1', fee: 200,  feeLabel: '₹200/hr', slots: ['10:00–12:00','12:00–14:00','14:00–16:00','16:00–18:00','18:00–20:00'] },
-  { key: 'ac2', fee: 100,  feeLabel: '₹100/hr', slots: ['06:00–07:00','07:00–08:00','08:00–09:00','17:00–18:00','18:00–19:00','19:00–20:00'] },
+  { key: 'ac1', fee: 0,    feeLabel: 'Free',     slots: ['10:00–12:00','12:00–14:00','14:00–16:00','16:00–18:00','18:00–20:00'] },
+  { key: 'ac2', fee: 0,    feeLabel: 'Free',     slots: ['06:00–07:00','07:00–08:00','08:00–09:00','17:00–18:00','18:00–19:00','19:00–20:00'] },
   { key: 'ac3', fee: 0,    feeLabel: 'Free',     slots: ['05:00–06:00','06:00–07:00','07:00–08:00','17:00–18:00','18:00–19:00','19:00–20:00','20:00–21:00'] },
-  { key: 'ac4', fee: 75,   feeLabel: '₹75/hr',  slots: ['08:00–10:00','10:00–12:00','14:00–16:00','16:00–18:00','18:00–20:00'] },
+  { key: 'ac4', fee: 0,    feeLabel: 'Free',     slots: ['08:00–10:00','10:00–12:00','14:00–16:00','16:00–18:00','18:00–20:00'] },
 ];
 
 /* deterministic slot status — same amenity+day+slot always gives same result */
