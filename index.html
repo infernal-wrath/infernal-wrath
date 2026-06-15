@@ -834,6 +834,45 @@ body.in-admin .bottom-nav { display: none !important; }
   background: var(--green-soft); border-radius: 30px; color: var(--green);
   font-weight: 700; font-size: 13px; letter-spacing: .04em;
 }
+
+/* ============================================================
+   DELIVERY SCREEN
+   ============================================================ */
+#delivery-view { padding-bottom: 8px; }
+.screen-back {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 13px; font-weight: 600; color: var(--muted);
+  cursor: pointer; padding: 2px 0 0; border: 0;
+  background: transparent; font-family: inherit;
+  transition: color .15s;
+}
+.screen-back:hover { color: var(--brass); }
+
+.delivery-item {
+  display: flex; align-items: center; gap: 13px;
+  padding: 12px 0; border-bottom: 1px solid var(--line-2);
+}
+.delivery-item:last-child { border-bottom: 0; padding-bottom: 0; }
+.delivery-icon {
+  width: 42px; height: 42px; border-radius: 13px; flex-shrink: 0;
+  background: var(--brass-soft); display: grid; place-items: center; font-size: 20px;
+}
+.delivery-icon.collected { background: var(--green-soft); }
+.delivery-name { font-weight: 600; font-size: 13.5px; }
+.delivery-sub  { color: var(--muted); font-size: 12px; margin-top: 2px; }
+.collect-btn {
+  margin-left: auto; flex-shrink: 0;
+  background: var(--teal); color: #fff; border: 0;
+  font-family: inherit; font-weight: 700; font-size: 12px;
+  padding: 8px 14px; border-radius: 10px; cursor: pointer;
+  transition: opacity .15s;
+}
+[data-theme="dark"] .collect-btn { color: var(--ink); }
+.collect-btn:hover { opacity: .85; }
+.collected-badge {
+  margin-left: auto; flex-shrink: 0; font-size: 12px;
+  font-weight: 700; color: var(--green);
+}
 </style>
 </head>
 <body>
@@ -951,7 +990,7 @@ body.in-admin .bottom-nav { display: none !important; }
       <button class="qa-btn" onclick="alert('Complaint — coming soon!')">
         <span class="qa-icon">🛠️</span><span id="qa-complaint">Complaint</span>
       </button>
-      <button class="qa-btn" onclick="alert('Delivery — coming soon!')">
+      <button class="qa-btn" onclick="showScreen('delivery')">
         <span class="qa-icon">📦</span><span id="qa-delivery">Delivery</span>
       </button>
     </div>
@@ -1383,6 +1422,150 @@ body.in-admin .bottom-nav { display: none !important; }
 </div>
 
 <!-- ═══════════════════════════════════════
+     DELIVERY VIEW
+     ═══════════════════════════════════════ -->
+<div id="delivery-view" class="view">
+  <div class="amen-head">
+    <div>
+      <button class="screen-back" onclick="showScreen('home')">← <span id="del-back">Home</span></button>
+      <div class="amen-head-name" id="del-title" style="margin-top:6px">Deliveries</div>
+    </div>
+    <div class="fee-pill" style="margin-top:8px">2 <span id="del-pending">pending</span></div>
+  </div>
+
+  <div class="max" style="padding-top:16px">
+
+    <div class="sec-title" id="del-active-lbl">Waiting at gate</div>
+    <div class="card">
+      <div class="delivery-item" id="del-item-1">
+        <div class="delivery-icon">🍔</div>
+        <div>
+          <div class="delivery-name" id="del-n1">Zomato — Food order</div>
+          <div class="delivery-sub" id="del-s1">Arrived 12 min ago · Gate main</div>
+        </div>
+        <button class="collect-btn" onclick="openCollect(1, 'Zomato')" id="del-collect-1">Collect</button>
+      </div>
+      <div class="delivery-item" id="del-item-2">
+        <div class="delivery-icon">📦</div>
+        <div>
+          <div class="delivery-name" id="del-n2">Amazon — Package</div>
+          <div class="delivery-sub" id="del-s2">Arrived 45 min ago · Gate main</div>
+        </div>
+        <button class="collect-btn" onclick="openCollect(2, 'Amazon')" id="del-collect-2">Collect</button>
+      </div>
+    </div>
+
+    <div class="sec-title" id="del-done-lbl">Collected today</div>
+    <div class="card">
+      <div class="delivery-item">
+        <div class="delivery-icon collected">🛒</div>
+        <div>
+          <div class="delivery-name" id="del-n3">BigBasket — Groceries</div>
+          <div class="delivery-sub" id="del-s3">Collected at 2:30 PM · OTP verified</div>
+        </div>
+        <span class="collected-badge">✓</span>
+      </div>
+    </div>
+
+    <div class="footer">Jubilee Hills Connect · demo prototype · Baner, Pune</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     NEW VISITOR PASS DIALOG
+     ═══════════════════════════════════════ -->
+<div class="overlay" id="new-pass-overlay">
+  <div class="dialog" style="text-align:left;max-width:420px">
+    <!-- Form state -->
+    <div class="raise-pending" id="np-pending">
+      <h3 style="text-align:center;margin-bottom:20px" id="np-dlg-title">New visitor pass</h3>
+      <div class="form-field">
+        <label class="form-label" id="np-name-lbl">Visitor name</label>
+        <input class="form-input" id="np-name" type="text" placeholder="Full name">
+      </div>
+      <div class="form-field">
+        <label class="form-label" id="np-phone-lbl">Mobile number</label>
+        <input class="form-input" id="np-phone" type="tel" inputmode="numeric" placeholder="+91 98765 43210">
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="form-field">
+          <label class="form-label" id="np-from-lbl">From</label>
+          <select class="form-select" id="np-from">
+            <option value="06:00">6:00 AM</option><option value="08:00">8:00 AM</option>
+            <option value="10:00">10:00 AM</option><option value="12:00">12:00 PM</option>
+            <option value="14:00" selected>2:00 PM</option><option value="16:00">4:00 PM</option>
+            <option value="18:00">6:00 PM</option><option value="20:00">8:00 PM</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label class="form-label" id="np-until-lbl">Until</label>
+          <select class="form-select" id="np-until">
+            <option value="08:00">8:00 AM</option><option value="10:00">10:00 AM</option>
+            <option value="12:00">12:00 PM</option><option value="14:00">2:00 PM</option>
+            <option value="16:00">4:00 PM</option><option value="18:00" selected>6:00 PM</option>
+            <option value="20:00">8:00 PM</option><option value="22:00">10:00 PM</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-field" style="margin-bottom:20px">
+        <label class="form-label" id="np-gate-lbl">Gate</label>
+        <select class="form-select" id="np-gate">
+          <option value="main" id="np-gate-main">Main gate</option>
+          <option value="back" id="np-gate-back">Back gate</option>
+          <option value="side" id="np-gate-side">Side gate</option>
+        </select>
+      </div>
+      <div class="dialog-btns">
+        <button class="btn-cancel" id="np-cancel">Cancel</button>
+        <button class="btn-confirm" id="np-submit">Generate pass</button>
+      </div>
+    </div>
+    <!-- Success state -->
+    <div class="raise-success" id="np-success">
+      <div class="dlg-emoji">🪪</div>
+      <h3 style="color:var(--green)" id="np-ok-title">Pass created!</h3>
+      <p id="np-ok-body">Share this code with your visitor. Guards will verify it at the gate.</p>
+      <div class="new-ticket-ref" id="np-pass-code">JH-PASS-0001</div>
+      <div class="dialog-btns" style="margin-top:20px">
+        <button class="btn-confirm" id="np-done">Done</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     COLLECT / OTP DIALOG
+     ═══════════════════════════════════════ -->
+<div class="overlay" id="collect-overlay">
+  <div class="dialog">
+    <div class="raise-pending" id="collect-pending">
+      <div class="dlg-emoji">📦</div>
+      <h3 id="collect-title">Collect package</h3>
+      <p id="collect-sub" style="margin-bottom:20px">Enter the OTP sent to your registered number to confirm collection.</p>
+      <div class="otp-inputs" id="collect-otp-inputs">
+        <input type="tel" inputmode="numeric" maxlength="1" class="collect-box">
+        <input type="tel" inputmode="numeric" maxlength="1" class="collect-box">
+        <input type="tel" inputmode="numeric" maxlength="1" class="collect-box">
+        <input type="tel" inputmode="numeric" maxlength="1" class="collect-box">
+      </div>
+      <p style="font-size:12px;color:var(--faint);margin-bottom:20px" id="collect-hint">Demo hint: enter any 4 digits</p>
+      <div class="dialog-btns">
+        <button class="btn-cancel" id="collect-cancel">Cancel</button>
+        <button class="btn-confirm" id="collect-verify">Verify &amp; collect</button>
+      </div>
+    </div>
+    <div class="raise-success" id="collect-success">
+      <div class="dlg-emoji">✅</div>
+      <h3 style="color:var(--green)" id="collect-ok-title">Collected!</h3>
+      <p id="collect-ok-body">OTP verified. Package marked as collected.</p>
+      <div class="dialog-btns" style="margin-top:20px">
+        <button class="btn-confirm" id="collect-done">Done</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
      GATE SHARE DIALOG
      ═══════════════════════════════════════ -->
 <div class="overlay" id="gate-share-overlay">
@@ -1590,6 +1773,22 @@ const strings = {
     'rc-house': 'Housekeeping', 'rc-sec': 'Security', 'rc-other': 'Other',
     'raise-ok-title': 'Complaint raised!',
     'raise-ok-body': 'Your complaint has been logged and will be assigned within 30 minutes.',
+    // delivery screen
+    'del-back': 'Home', 'del-title': 'Deliveries', 'del-pending': 'pending',
+    'del-active-lbl': 'Waiting at gate', 'del-done-lbl': 'Collected today',
+    'del-n1': 'Zomato — Food order', 'del-s1': 'Arrived 12 min ago · Gate main',
+    'del-n2': 'Amazon — Package',     'del-s2': 'Arrived 45 min ago · Gate main',
+    'del-n3': 'BigBasket — Groceries','del-s3': 'Collected at 2:30 PM · OTP verified',
+    // new visitor pass dialog
+    'np-dlg-title': 'New visitor pass',
+    'np-name-lbl': 'Visitor name', 'np-phone-lbl': 'Mobile number',
+    'np-from-lbl': 'From', 'np-until-lbl': 'Until', 'np-gate-lbl': 'Gate',
+    'np-gate-main': 'Main gate', 'np-gate-back': 'Back gate', 'np-gate-side': 'Side gate',
+    'np-ok-title': 'Pass created!',
+    'np-ok-body': 'Share this code with your visitor. Guards will verify it at the gate.',
+    // collect OTP dialog
+    'collect-title': 'Collect package', 'collect-hint': 'Demo hint: enter any 4 digits',
+    'collect-ok-title': 'Collected!', 'collect-ok-body': 'OTP verified. Package marked as collected.',
   },
   hi: {
     tagline:         'समुदाय जीवन, जुड़ा हुआ',
@@ -1668,6 +1867,22 @@ const strings = {
     'rc-house': 'सफाई', 'rc-sec': 'सुरक्षा', 'rc-other': 'अन्य',
     'raise-ok-title': 'शिकायत दर्ज!',
     'raise-ok-body': 'आपकी शिकायत दर्ज हो गई है और 30 मिनट में सौंपी जाएगी।',
+    // delivery screen
+    'del-back': 'होम', 'del-title': 'डिलीवरी', 'del-pending': 'लंबित',
+    'del-active-lbl': 'गेट पर प्रतीक्षारत', 'del-done-lbl': 'आज प्राप्त',
+    'del-n1': 'Zomato — खाना ऑर्डर', 'del-s1': '12 मिनट पहले पहुंचा · मुख्य गेट',
+    'del-n2': 'Amazon — पैकेज',       'del-s2': '45 मिनट पहले पहुंचा · मुख्य गेट',
+    'del-n3': 'BigBasket — किराना',   'del-s3': '2:30 बजे प्राप्त · OTP सत्यापित',
+    // new visitor pass dialog
+    'np-dlg-title': 'नया आगंतुक पास',
+    'np-name-lbl': 'आगंतुक का नाम', 'np-phone-lbl': 'मोबाइल नंबर',
+    'np-from-lbl': 'से', 'np-until-lbl': 'तक', 'np-gate-lbl': 'गेट',
+    'np-gate-main': 'मुख्य गेट', 'np-gate-back': 'पिछला गेट', 'np-gate-side': 'साइड गेट',
+    'np-ok-title': 'पास बनाया!',
+    'np-ok-body': 'यह कोड अपने आगंतुक को भेजें। गार्ड गेट पर सत्यापित करेंगे।',
+    // collect OTP dialog
+    'collect-title': 'पैकेज लें', 'collect-hint': 'डेमो संकेत: कोई भी 4 अंक दर्ज करें',
+    'collect-ok-title': 'प्राप्त!', 'collect-ok-body': 'OTP सत्यापित। पैकेज प्राप्त के रूप में दर्ज।',
   },
   mr: {
     tagline:         'समुदाय जीवन, जोडलेले',
@@ -1746,6 +1961,22 @@ const strings = {
     'rc-house': 'स्वच्छता', 'rc-sec': 'सुरक्षा', 'rc-other': 'इतर',
     'raise-ok-title': 'तक्रार नोंदवली!',
     'raise-ok-body': 'तुमची तक्रार नोंदवली गेली असून 30 मिनिटांत दिली जाईल.',
+    // delivery screen
+    'del-back': 'होम', 'del-title': 'डिलिव्हरी', 'del-pending': 'प्रलंबित',
+    'del-active-lbl': 'गेटवर वाट पाहत', 'del-done-lbl': 'आज घेतले',
+    'del-n1': 'Zomato — जेवण ऑर्डर', 'del-s1': '12 मिनिटांपूर्वी आले · मुख्य गेट',
+    'del-n2': 'Amazon — पॅकेज',       'del-s2': '45 मिनिटांपूर्वी आले · मुख्य गेट',
+    'del-n3': 'BigBasket — किराणा',   'del-s3': '2:30 ला घेतले · OTP पडताळले',
+    // new visitor pass dialog
+    'np-dlg-title': 'नवा पाहुणे पास',
+    'np-name-lbl': 'पाहुण्याचे नाव', 'np-phone-lbl': 'मोबाइल नंबर',
+    'np-from-lbl': 'पासून', 'np-until-lbl': 'पर्यंत', 'np-gate-lbl': 'गेट',
+    'np-gate-main': 'मुख्य गेट', 'np-gate-back': 'मागचा गेट', 'np-gate-side': 'बाजूचा गेट',
+    'np-ok-title': 'पास तयार!',
+    'np-ok-body': 'हा कोड तुमच्या पाहुण्याला पाठवा. गार्ड गेटवर पडताळतील.',
+    // collect OTP dialog
+    'collect-title': 'पॅकेज घ्या', 'collect-hint': 'डेमो सूचना: कोणतेही 4 अंक प्रविष्ट करा',
+    'collect-ok-title': 'घेतले!', 'collect-ok-body': 'OTP पडताळले. पॅकेज घेतले म्हणून नोंद.',
   }
 };
 
@@ -2058,12 +2289,121 @@ document.getElementById('gate-share-overlay').addEventListener('click', e => {
   if (e.target === e.currentTarget) document.getElementById('gate-share-overlay').classList.remove('open');
 });
 
-/* New pass stub */
+/* ────────────────────────────────────────
+   NEW VISITOR PASS DIALOG
+   ──────────────────────────────────────── */
+let passCounter = 1;
+
 document.getElementById('new-pass-btn').addEventListener('click', () => {
-  const msg = currentLang === 'hi' ? 'नया पास — जल्द आ रहा है!'
-            : currentLang === 'mr' ? 'नवा पास — लवकरच येत आहे!'
-            : 'New visitor pass — coming in the next build!';
-  alert(msg);
+  // reset form
+  document.getElementById('np-name').value = '';
+  document.getElementById('np-phone').value = '';
+  document.getElementById('np-from').value = '14:00';
+  document.getElementById('np-until').value = '18:00';
+  document.getElementById('np-gate').value = 'main';
+  document.getElementById('np-name').style.borderColor = '';
+  document.getElementById('np-pending').classList.remove('hide');
+  document.getElementById('np-success').classList.remove('show');
+  document.getElementById('new-pass-overlay').classList.add('open');
+});
+
+document.getElementById('np-cancel').addEventListener('click', () => {
+  document.getElementById('new-pass-overlay').classList.remove('open');
+});
+
+document.getElementById('np-submit').addEventListener('click', () => {
+  const name = document.getElementById('np-name').value.trim();
+  if (!name) {
+    document.getElementById('np-name').style.borderColor = 'var(--red)';
+    document.getElementById('np-name').focus();
+    return;
+  }
+  document.getElementById('np-name').style.borderColor = '';
+  const code = 'JH-PASS-' + String(passCounter++).padStart(4, '0');
+  document.getElementById('np-pass-code').textContent = code;
+  document.getElementById('np-pending').classList.add('hide');
+  document.getElementById('np-success').classList.add('show');
+});
+
+document.getElementById('np-done').addEventListener('click', () => {
+  document.getElementById('new-pass-overlay').classList.remove('open');
+});
+
+document.getElementById('new-pass-overlay').addEventListener('click', e => {
+  if (e.target === e.currentTarget) document.getElementById('new-pass-overlay').classList.remove('open');
+});
+
+/* ────────────────────────────────────────
+   COLLECT / DELIVERY OTP DIALOG
+   ──────────────────────────────────────── */
+let collectItemId = null;
+
+function openCollect(itemId, name) {
+  collectItemId = itemId;
+  // reset OTP boxes
+  document.querySelectorAll('.collect-box').forEach(b => { b.value = ''; b.style.borderColor = ''; });
+  document.getElementById('collect-title').textContent =
+    currentLang === 'hi' ? 'पैकेज लें' : currentLang === 'mr' ? 'पॅकेज घ्या' : 'Collect package';
+  document.getElementById('collect-pending').classList.remove('hide');
+  document.getElementById('collect-success').classList.remove('show');
+  document.getElementById('collect-overlay').classList.add('open');
+  // focus first box
+  document.querySelectorAll('.collect-box')[0].focus();
+}
+
+// OTP box auto-advance (same pattern as login OTP)
+document.querySelectorAll('.collect-box').forEach((box, i, all) => {
+  box.addEventListener('input', () => {
+    box.value = box.value.replace(/\D/g, '').slice(0, 1);
+    if (box.value && i < all.length - 1) all[i + 1].focus();
+    // auto-verify when all 4 filled
+    if ([...all].every(b => b.value)) verifyCollect();
+  });
+  box.addEventListener('keydown', e => {
+    if (e.key === 'Backspace' && !box.value && i > 0) all[i - 1].focus();
+  });
+});
+
+function verifyCollect() {
+  const digits = [...document.querySelectorAll('.collect-box')].map(b => b.value).join('');
+  if (digits.length < 4) return;
+  document.getElementById('collect-pending').classList.add('hide');
+  document.getElementById('collect-success').classList.add('show');
+}
+
+document.getElementById('collect-verify').addEventListener('click', verifyCollect);
+
+document.getElementById('collect-cancel').addEventListener('click', () => {
+  document.getElementById('collect-overlay').classList.remove('open');
+});
+
+document.getElementById('collect-done').addEventListener('click', () => {
+  document.getElementById('collect-overlay').classList.remove('open');
+  // Mark item as collected in the UI
+  if (collectItemId) {
+    const btn = document.getElementById('del-collect-' + collectItemId);
+    if (btn) {
+      const badge = document.createElement('span');
+      badge.className = 'collected-badge';
+      badge.textContent = '✓';
+      btn.replaceWith(badge);
+    }
+    const icon = document.querySelector('#del-item-' + collectItemId + ' .delivery-icon');
+    if (icon) icon.classList.add('collected');
+    collectItemId = null;
+    // decrement pending count
+    const pill = document.querySelector('#delivery-view .fee-pill');
+    if (pill) {
+      const current = parseInt(pill.textContent) || 0;
+      const next = Math.max(0, current - 1);
+      const pendingWord = currentLang === 'hi' ? 'लंबित' : currentLang === 'mr' ? 'प्रलंबित' : 'pending';
+      pill.textContent = next + ' ' + pendingWord;
+    }
+  }
+});
+
+document.getElementById('collect-overlay').addEventListener('click', e => {
+  if (e.target === e.currentTarget) document.getElementById('collect-overlay').classList.remove('open');
 });
 
 /* ────────────────────────────────────────
