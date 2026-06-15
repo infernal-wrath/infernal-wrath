@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Jubilee Hills Connect</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=Inter:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+/* ── Design tokens ── */
+:root {
+  --bg:          #E9ECEA;
+  --panel:       #FBFCFB;
+  --card:        #FFFFFF;
+  --ink:         #142F2D;
+  --muted:       #5B6B68;
+  --faint:       #889693;
+  --brass:       #A9722B;
+  --brass-soft:  #EFE2CB;
+  --teal:        #142F2D;
+  --teal-2:      #1E4A45;
+  --green:       #2E7D5B;
+  --green-soft:  #DCEEE4;
+  --red:         #C2452D;
+  --red-soft:    #F6DDD6;
+  --line:        rgba(20,47,45,.12);
+  --line-2:      rgba(20,47,45,.07);
+  --shadow:      0 1px 2px rgba(20,47,45,.06), 0 6px 24px rgba(20,47,45,.08);
+  --shadow-lg:   0 24px 64px -16px rgba(20,47,45,.28);
+  --r:           18px;
+  --max:         680px;
+}
+[data-theme="dark"] {
+  --bg:          #0C1211;
+  --panel:       #121A18;
+  --card:        #161F1D;
+  --ink:         #E9EEEB;
+  --muted:       #9AA8A4;
+  --faint:       #6C7B77;
+  --brass:       #D6A45E;
+  --brass-soft:  #2C2214;
+  --teal:        #0F1716;
+  --teal-2:      #1A2826;
+  --green:       #5BB489;
+  --green-soft:  #16271F;
+  --red:         #E0795F;
+  --red-soft:    #2A1813;
+  --line:        rgba(255,255,255,.10);
+  --line-2:      rgba(255,255,255,.05);
+  --shadow:      0 1px 2px rgba(0,0,0,.4), 0 8px 28px rgba(0,0,0,.4);
+  --shadow-lg:   0 32px 72px -20px rgba(0,0,0,.7);
+}
+
+/* ── Reset & base ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'Inter', system-ui, sans-serif;
+  font-weight: 400;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  transition: background .3s ease, color .3s ease;
+  min-height: 100dvh;
+}
+.display { font-family: 'Bricolage Grotesque', sans-serif; letter-spacing: -.02em; line-height: 1.08; }
+
+/* ── Shared utilities ── */
+.max { max-width: var(--max); margin: 0 auto; padding: 0 20px; }
+
+/* ============================================================
+   TOP BAR
+   ============================================================ */
+.topbar {
+  position: sticky; top: 0; z-index: 100;
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--line);
+}
+.topbar-inner {
+  max-width: var(--max); margin: 0 auto; padding: 0 20px;
+  height: 62px;
+  display: flex; align-items: center; gap: 12px;
+}
+.brand { display: flex; align-items: center; gap: 10px; margin-right: auto; }
+.mark {
+  width: 34px; height: 34px; border-radius: 10px;
+  background: var(--teal);
+  box-shadow: inset 0 0 0 1.5px var(--brass);
+  display: grid; place-items: center; flex-shrink: 0;
+}
+.mark span { font-family: 'Bricolage Grotesque'; font-weight: 800; color: var(--brass); font-size: 15px; }
+.brand-text b { font-family: 'Bricolage Grotesque'; font-weight: 700; font-size: 17px; letter-spacing: -.01em; display: block; }
+.brand-text small { color: var(--muted); font-size: 11px; font-weight: 500; display: block; margin-top: -2px; }
+
+/* language toggle */
+.seg {
+  display: flex; background: var(--card);
+  border: 1px solid var(--line); border-radius: 10px;
+  padding: 3px; box-shadow: var(--shadow);
+}
+.seg button {
+  border: 0; background: transparent; color: var(--muted);
+  font-family: inherit; font-weight: 600; font-size: 12px;
+  padding: 5px 10px; border-radius: 7px;
+  cursor: pointer; transition: background .15s, color .15s;
+  white-space: nowrap;
+}
+.seg button.on { background: var(--teal); color: #fff; }
+[data-theme="dark"] .seg button.on { color: var(--ink); }
+
+/* theme toggle */
+.icon-btn {
+  width: 36px; height: 36px; border-radius: 10px;
+  border: 1px solid var(--line); background: var(--card);
+  color: var(--ink); cursor: pointer;
+  display: grid; place-items: center;
+  box-shadow: var(--shadow); font-size: 16px;
+  transition: background .15s;
+}
+.icon-btn:hover { background: var(--brass-soft); }
+
+/* ============================================================
+   VIEWS (login / home)
+   ============================================================ */
+.view { display: none; }
+.view.active { display: block; }
+
+/* ============================================================
+   LOGIN SCREEN
+   ============================================================ */
+#login-view {
+  min-height: calc(100dvh - 62px);
+  display: none; /* overridden by .active */
+  flex-direction: column; align-items: center; justify-content: center;
+  padding: 40px 20px;
+}
+#login-view.active { display: flex; }
+
+.login-card {
+  width: 100%; max-width: 400px;
+  background: var(--card); border: 1px solid var(--line);
+  border-radius: 24px; padding: 36px 32px;
+  box-shadow: var(--shadow-lg);
+}
+.login-logo {
+  display: flex; align-items: center; gap: 11px; margin-bottom: 28px;
+}
+.login-logo .mark { width: 42px; height: 42px; border-radius: 13px; }
+.login-logo .mark span { font-size: 18px; }
+.login-logo b { font-family: 'Bricolage Grotesque'; font-weight: 700; font-size: 20px; }
+.login-logo small { color: var(--muted); font-size: 12px; display: block; }
+
+.login-card h2 { font-family: 'Bricolage Grotesque'; font-size: 22px; font-weight: 700; margin-bottom: 6px; }
+.login-card p { color: var(--muted); font-size: 14px; margin-bottom: 26px; }
+
+.field-label { font-size: 12.5px; font-weight: 600; color: var(--muted); margin-bottom: 7px; display: block; }
+.field {
+  width: 100%; padding: 12px 15px;
+  background: var(--bg); border: 1.5px solid var(--line);
+  border-radius: 12px; color: var(--ink);
+  font-family: inherit; font-size: 15px; font-weight: 500;
+  outline: none; transition: border-color .15s;
+}
+.field:focus { border-color: var(--brass); }
+.field::placeholder { color: var(--faint); }
+
+.phone-wrap { display: flex; gap: 10px; }
+.phone-prefix {
+  padding: 12px 14px; background: var(--bg);
+  border: 1.5px solid var(--line); border-radius: 12px;
+  font-size: 15px; font-weight: 600; color: var(--muted);
+  white-space: nowrap; flex-shrink: 0;
+}
+
+.otp-row {
+  display: none; /* shown after phone submit */
+  flex-direction: column; margin-top: 18px;
+}
+.otp-row.show { display: flex; }
+
+.otp-hint { font-size: 13px; color: var(--muted); margin-bottom: 14px; }
+.otp-hint b { color: var(--ink); }
+
+.otp-inputs { display: flex; gap: 10px; margin-bottom: 18px; }
+.otp-inputs input {
+  flex: 1; aspect-ratio: 1; text-align: center;
+  font-size: 20px; font-weight: 700;
+  background: var(--bg); border: 1.5px solid var(--line);
+  border-radius: 12px; color: var(--ink);
+  font-family: 'Bricolage Grotesque', sans-serif;
+  outline: none; transition: border-color .15s;
+  min-width: 0;
+}
+.otp-inputs input:focus { border-color: var(--brass); }
+
+.btn-primary {
+  width: 100%; padding: 13px;
+  background: var(--teal); color: #fff;
+  font-family: inherit; font-size: 15px; font-weight: 700;
+  border: 0; border-radius: 13px; cursor: pointer;
+  transition: opacity .15s, transform .1s;
+  letter-spacing: -.01em;
+}
+[data-theme="dark"] .btn-primary { color: var(--ink); }
+.btn-primary:hover { opacity: .88; }
+.btn-primary:active { transform: scale(.98); }
+
+.login-note {
+  text-align: center; color: var(--faint);
+  font-size: 12px; margin-top: 18px; line-height: 1.6;
+}
+
+/* ============================================================
+   HOME SCREEN
+   ============================================================ */
+#home-view { padding-bottom: 48px; }
+
+/* greeting header */
+.greeting {
+  max-width: var(--max); margin: 0 auto; padding: 28px 20px 0;
+  display: flex; align-items: center; gap: 13px;
+}
+.avatar {
+  width: 46px; height: 46px; border-radius: 14px; flex-shrink: 0;
+  background: linear-gradient(135deg, var(--teal-2), var(--teal));
+  color: var(--brass); display: grid; place-items: center;
+  font-family: 'Bricolage Grotesque'; font-weight: 800; font-size: 17px;
+}
+.greet-text .hi { font-size: 13px; color: var(--muted); }
+.greet-text .name { font-family: 'Bricolage Grotesque'; font-weight: 700; font-size: 18px; }
+.weather-pill {
+  margin-left: auto; padding: 7px 13px;
+  background: var(--card); border: 1px solid var(--line);
+  border-radius: 30px; font-size: 13px; font-weight: 600;
+  color: var(--muted); box-shadow: var(--shadow); white-space: nowrap;
+}
+
+/* cards common */
+.card {
+  background: var(--card); border: 1px solid var(--line);
+  border-radius: var(--r); padding: 18px;
+  box-shadow: var(--shadow); margin-bottom: 14px;
+}
+
+/* dues card */
+.dues-card {
+  background: linear-gradient(140deg, var(--teal-2), var(--teal));
+  border: 0; color: #eef3f1; position: relative; overflow: hidden;
+}
+.dues-card::after {
+  content: ""; position: absolute; right: -28px; top: -28px;
+  width: 120px; height: 120px; border-radius: 50%;
+  background: var(--brass); opacity: .15; pointer-events: none;
+}
+.dues-lbl { font-size: 12.5px; opacity: .8; font-weight: 500; }
+.dues-amt {
+  font-family: 'Bricolage Grotesque'; font-weight: 800;
+  font-size: 34px; color: #fff; margin: 5px 0 4px; letter-spacing: -.02em;
+}
+.dues-due { font-size: 13px; opacity: .85; }
+.pay-btn {
+  margin-top: 16px; width: 100%;
+  background: var(--brass); color: #1c1407;
+  font-family: inherit; font-weight: 700; font-size: 14px;
+  padding: 13px; border-radius: 13px; border: 0; cursor: pointer;
+  letter-spacing: -.01em; transition: opacity .15s;
+}
+.pay-btn:hover { opacity: .88; }
+
+/* quick actions */
+.quick-actions {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;
+  margin-bottom: 14px;
+}
+.qa-btn {
+  background: var(--card); border: 1px solid var(--line);
+  border-radius: 16px; padding: 15px 8px 13px;
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  cursor: pointer; box-shadow: var(--shadow);
+  font-family: inherit; font-size: 11.5px; font-weight: 600;
+  color: var(--ink); transition: transform .15s, box-shadow .15s;
+  border: none; /* override */
+  border: 1px solid var(--line);
+}
+.qa-btn:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+.qa-icon {
+  width: 40px; height: 40px; border-radius: 12px;
+  background: var(--brass-soft); display: grid; place-items: center;
+  font-size: 20px;
+}
+
+/* section title */
+.sec-title {
+  font-size: 12px; font-weight: 700; letter-spacing: .04em;
+  text-transform: uppercase; color: var(--muted);
+  margin: 2px 0 12px;
+}
+
+/* notice rows */
+.notice-row {
+  display: flex; gap: 12px; align-items: flex-start;
+  padding: 12px 0; border-bottom: 1px solid var(--line-2);
+}
+.notice-row:last-child { border-bottom: 0; padding-bottom: 0; }
+.dot {
+  width: 9px; height: 9px; border-radius: 50%;
+  flex-shrink: 0; margin-top: 5px;
+}
+.notice-title { font-weight: 600; font-size: 14px; }
+.notice-sub { color: var(--muted); font-size: 12.5px; margin-top: 2px; }
+.notice-time { margin-left: auto; font-size: 11px; color: var(--faint); white-space: nowrap; padding-left: 8px; }
+
+/* SOS */
+.sos-strip {
+  display: flex; align-items: center; gap: 14px;
+  background: var(--red-soft); border: 1px solid var(--red);
+  border-radius: 18px; padding: 16px 18px; margin-bottom: 14px;
+}
+.sos-text b { color: var(--red); font-family: 'Bricolage Grotesque'; font-weight: 700; font-size: 16px; display: block; }
+.sos-text small { color: var(--muted); font-size: 12.5px; display: block; margin-top: 2px; }
+.sos-btn {
+  margin-left: auto; flex-shrink: 0;
+  width: 52px; height: 52px; border-radius: 50%;
+  background: var(--red); color: #fff; border: 0;
+  font-family: 'Bricolage Grotesque'; font-weight: 800; font-size: 12px;
+  cursor: pointer; letter-spacing: .04em;
+  box-shadow: 0 0 0 4px var(--red-soft);
+  transition: box-shadow .15s, transform .1s;
+}
+.sos-btn:hover { box-shadow: 0 0 0 8px rgba(194,69,45,.25); }
+.sos-btn:active { transform: scale(.95); }
+
+/* ============================================================
+   SOS DIALOG
+   ============================================================ */
+.overlay {
+  position: fixed; inset: 0; z-index: 200;
+  background: rgba(0,0,0,.5); backdrop-filter: blur(4px);
+  display: none; place-items: center; padding: 20px;
+}
+.overlay.open { display: grid; }
+.dialog {
+  background: var(--card); border-radius: 24px;
+  padding: 32px 28px; max-width: 360px; width: 100%;
+  box-shadow: var(--shadow-lg); text-align: center;
+  animation: pop .25s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes pop { from { opacity: 0; transform: scale(.88); } to { opacity: 1; transform: scale(1); } }
+.dialog .sos-emoji { font-size: 48px; margin-bottom: 14px; }
+.dialog h3 { font-family: 'Bricolage Grotesque'; font-size: 22px; font-weight: 700; margin-bottom: 8px; color: var(--red); }
+.dialog p { color: var(--muted); font-size: 14px; margin-bottom: 24px; line-height: 1.6; }
+.dialog-btns { display: flex; gap: 10px; }
+.btn-cancel {
+  flex: 1; padding: 12px; border-radius: 12px;
+  background: var(--bg); border: 1px solid var(--line);
+  font-family: inherit; font-size: 14px; font-weight: 600;
+  color: var(--muted); cursor: pointer;
+}
+.btn-sos-confirm {
+  flex: 1; padding: 12px; border-radius: 12px;
+  background: var(--red); border: 0;
+  font-family: inherit; font-size: 14px; font-weight: 700;
+  color: #fff; cursor: pointer;
+}
+
+/* ============================================================
+   PAY DIALOG
+   ============================================================ */
+.pay-dialog { text-align: center; }
+.pay-dialog .pay-emoji { font-size: 44px; margin-bottom: 14px; }
+.pay-dialog h3 { font-family: 'Bricolage Grotesque'; font-size: 21px; font-weight: 700; margin-bottom: 8px; }
+.pay-dialog p { color: var(--muted); font-size: 14px; margin-bottom: 24px; line-height: 1.6; }
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+.footer {
+  text-align: center; color: var(--faint); font-size: 12px;
+  padding: 16px 20px 0;
+}
+
+/* ============================================================
+   RESPONSIVE — wider screens get a nice centred card look
+   ============================================================ */
+@media (min-width: 720px) {
+  #home-view {
+    padding-top: 24px;
+  }
+  .greeting { padding-top: 10px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════
+     TOP BAR — visible on both screens
+     ═══════════════════════════════════════ -->
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <div class="mark"><span>JH</span></div>
+      <div class="brand-text">
+        <b>Jubilee Hills Connect</b>
+        <small id="tagline">Community living, connected</small>
+      </div>
+    </div>
+
+    <!-- language toggle -->
+    <div class="seg" id="lang-seg">
+      <button data-l="en" class="on">EN</button>
+      <button data-l="hi">हिं</button>
+      <button data-l="mr">मरा</button>
+    </div>
+
+    <!-- theme toggle -->
+    <button class="icon-btn" id="theme-btn" title="Toggle light / dark">◐</button>
+  </div>
+</header>
+
+<!-- ═══════════════════════════════════════
+     LOGIN VIEW
+     ═══════════════════════════════════════ -->
+<div id="login-view" class="view active">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="mark"><span>JH</span></div>
+      <div>
+        <b>Jubilee Hills Connect</b>
+        <small>Jubilee Hills, Baner · Pune</small>
+      </div>
+    </div>
+
+    <h2 id="login-title">Welcome back</h2>
+    <p id="login-sub">Enter your registered mobile number to continue.</p>
+
+    <!-- step 1 — phone -->
+    <div id="step-phone">
+      <label class="field-label" id="phone-label" for="phone-input">Mobile number</label>
+      <div class="phone-wrap">
+        <span class="phone-prefix">+91</span>
+        <input class="field" id="phone-input" type="tel" inputmode="numeric"
+               maxlength="10" placeholder="98765 43210" autocomplete="tel">
+      </div>
+      <button class="btn-primary" style="margin-top:18px" id="send-otp-btn">Send OTP</button>
+    </div>
+
+    <!-- step 2 — OTP -->
+    <div class="otp-row" id="step-otp">
+      <p class="otp-hint" id="otp-hint">We've sent a 4-digit code to <b id="otp-phone"></b></p>
+      <div class="otp-inputs">
+        <input type="tel" inputmode="numeric" maxlength="1" class="otp-box">
+        <input type="tel" inputmode="numeric" maxlength="1" class="otp-box">
+        <input type="tel" inputmode="numeric" maxlength="1" class="otp-box">
+        <input type="tel" inputmode="numeric" maxlength="1" class="otp-box">
+      </div>
+      <button class="btn-primary" id="verify-otp-btn">Continue</button>
+    </div>
+
+    <p class="login-note" id="login-note">
+      This is a demo — any mobile number and any 4-digit code will work.
+    </p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     HOME VIEW
+     ═══════════════════════════════════════ -->
+<div id="home-view" class="view">
+
+  <!-- Greeting -->
+  <div class="greeting">
+    <div class="avatar">SM</div>
+    <div class="greet-text">
+      <div class="hi" id="greet-hi">Good morning,</div>
+      <div class="name">Shriram · A-1203</div>
+    </div>
+    <div class="weather-pill">⛅ 28° Pune</div>
+  </div>
+
+  <!-- Content area -->
+  <div class="max" style="padding-top: 20px;">
+
+    <!-- Dues card -->
+    <div class="card dues-card">
+      <div class="dues-lbl" id="dues-lbl">Maintenance due</div>
+      <div class="dues-amt">₹ 4,200</div>
+      <div class="dues-due" id="dues-due">Due 5 July 2026 · June quarter</div>
+      <button class="pay-btn" id="pay-btn">Pay now via UPI</button>
+    </div>
+
+    <!-- Quick actions -->
+    <div class="quick-actions">
+      <button class="qa-btn" onclick="alert('Visitor pass — coming soon!')">
+        <span class="qa-icon">🪪</span>
+        <span id="qa-visitor">Visitor</span>
+      </button>
+      <button class="qa-btn" onclick="alert('Amenity booking — coming soon!')">
+        <span class="qa-icon">📅</span>
+        <span id="qa-book">Book</span>
+      </button>
+      <button class="qa-btn" onclick="alert('Complaint — coming soon!')">
+        <span class="qa-icon">🛠️</span>
+        <span id="qa-complaint">Complaint</span>
+      </button>
+      <button class="qa-btn" onclick="alert('Delivery — coming soon!')">
+        <span class="qa-icon">📦</span>
+        <span id="qa-delivery">Delivery</span>
+      </button>
+    </div>
+
+    <!-- Notice board -->
+    <div class="card">
+      <div class="sec-title" id="notice-title">Notice board</div>
+
+      <div class="notice-row">
+        <div class="dot" style="background:var(--red)"></div>
+        <div>
+          <div class="notice-title" id="n1">Water tanker — Tower A, 2 PM</div>
+          <div class="notice-sub" id="n1s">Supply maintenance · committee</div>
+        </div>
+        <div class="notice-time">1h</div>
+      </div>
+
+      <div class="notice-row">
+        <div class="dot" style="background:var(--brass)"></div>
+        <div>
+          <div class="notice-title" id="n2">Ganeshotsav planning meet</div>
+          <div class="notice-sub" id="n2s">Clubhouse · Sat 7 PM</div>
+        </div>
+        <div class="notice-time">3h</div>
+      </div>
+
+      <div class="notice-row">
+        <div class="dot" style="background:var(--green)"></div>
+        <div>
+          <div class="notice-title" id="n3">Pool reopens after cleaning</div>
+          <div class="notice-sub" id="n3s">6 AM – 9 PM slots open</div>
+        </div>
+        <div class="notice-time">1d</div>
+      </div>
+    </div>
+
+    <!-- SOS -->
+    <div class="sos-strip">
+      <div class="sos-text">
+        <b>SOS</b>
+        <small id="sos-sub">Hold for emergency — guards alerted instantly</small>
+      </div>
+      <button class="sos-btn" id="sos-btn">HOLD</button>
+    </div>
+
+    <div class="footer" id="footer-text">Jubilee Hills Connect · demo prototype · Baner, Pune</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     SOS DIALOG
+     ═══════════════════════════════════════ -->
+<div class="overlay" id="sos-overlay">
+  <div class="dialog">
+    <div class="sos-emoji">🚨</div>
+    <h3 id="sos-dlg-title">Send SOS alert?</h3>
+    <p id="sos-dlg-body">
+      This will instantly alert all security guards and the committee with your flat number and location.
+    </p>
+    <div class="dialog-btns">
+      <button class="btn-cancel" id="sos-cancel">Cancel</button>
+      <button class="btn-sos-confirm" id="sos-confirm">Alert now</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     PAY DIALOG
+     ═══════════════════════════════════════ -->
+<div class="overlay" id="pay-overlay">
+  <div class="dialog pay-dialog">
+    <div class="pay-emoji">💳</div>
+    <h3 id="pay-dlg-title">UPI payment</h3>
+    <p id="pay-dlg-body">
+      UPI integration with Razorpay is coming in the next build. For now this is a demo — no real payment is made.
+    </p>
+    <div class="dialog-btns">
+      <button class="btn-cancel" id="pay-close">Got it</button>
+    </div>
+  </div>
+</div>
+
+
+<script>
+/* ────────────────────────────────────────
+   THEME TOGGLE
+   ──────────────────────────────────────── */
+const html = document.documentElement;
+document.getElementById('theme-btn').addEventListener('click', function () {
+  const dark = html.dataset.theme === 'dark';
+  html.dataset.theme = dark ? 'light' : 'dark';
+  this.textContent = dark ? '◐' : '◑';
+});
+
+/* ────────────────────────────────────────
+   LANGUAGE / i18n
+   ──────────────────────────────────────── */
+const strings = {
+  en: {
+    tagline:      'Community living, connected',
+    'login-title':'Welcome back',
+    'login-sub':  'Enter your registered mobile number to continue.',
+    'phone-label':'Mobile number',
+    'otp-hint':   "We've sent a 4-digit code to ",
+    'login-note': 'This is a demo — any mobile number and any 4-digit code will work.',
+    'greet-hi':   'Good morning,',
+    'dues-lbl':   'Maintenance due',
+    'dues-due':   'Due 5 July 2026 · June quarter',
+    'pay-btn':    'Pay now via UPI',
+    'qa-visitor': 'Visitor',
+    'qa-book':    'Book',
+    'qa-complaint':'Complaint',
+    'qa-delivery':'Delivery',
+    'notice-title':'Notice board',
+    'n1':         'Water tanker — Tower A, 2 PM',
+    'n1s':        'Supply maintenance · committee',
+    'n2':         'Ganeshotsav planning meet',
+    'n2s':        'Clubhouse · Sat 7 PM',
+    'n3':         'Pool reopens after cleaning',
+    'n3s':        '6 AM – 9 PM slots open',
+    'sos-sub':    'Hold for emergency — guards alerted instantly',
+    'sos-dlg-title': 'Send SOS alert?',
+    'sos-dlg-body':  'This will instantly alert all security guards and the committee with your flat number and location.',
+    'pay-dlg-title': 'UPI payment',
+    'pay-dlg-body':  'UPI integration with Razorpay is coming in the next build. For now this is a demo — no real payment is made.',
+    'footer-text':'Jubilee Hills Connect · demo prototype · Baner, Pune',
+    'send-otp-btn':'Send OTP',
+    'verify-otp-btn':'Continue',
+    'btn-cancel':'Cancel',
+    'btn-cancel-pay':'Got it',
+    'sos-confirm':'Alert now',
+  },
+  hi: {
+    tagline:      'समुदाय जीवन, जुड़ा हुआ',
+    'login-title':'वापस स्वागत है',
+    'login-sub':  'जारी रखने के लिए अपना पंजीकृत मोबाइल नंबर दर्ज करें।',
+    'phone-label':'मोबाइल नंबर',
+    'otp-hint':   "हमने 4-अंकीय कोड भेजा है ",
+    'login-note': 'यह एक डेमो है — कोई भी मोबाइल नंबर और कोई भी 4-अंकीय कोड काम करेगा।',
+    'greet-hi':   'सुप्रभात,',
+    'dues-lbl':   'रखरखाव बकाया',
+    'dues-due':   'देय 5 जुलाई 2026 · जून तिमाही',
+    'pay-btn':    'UPI से अभी भुगतान करें',
+    'qa-visitor': 'आगंतुक',
+    'qa-book':    'बुक',
+    'qa-complaint':'शिकायत',
+    'qa-delivery':'डिलीवरी',
+    'notice-title':'सूचना बोर्ड',
+    'n1':         'पानी का टैंकर — टावर A, 2 बजे',
+    'n1s':        'आपूर्ति रखरखाव · समिति',
+    'n2':         'गणेशोत्सव बैठक',
+    'n2s':        'क्लबहाउस · शनि 7 बजे',
+    'n3':         'सफाई के बाद पूल खुला',
+    'n3s':        'सुबह 6 – रात 9 स्लॉट खुले',
+    'sos-sub':    'आपात स्थिति में दबाए रखें — गार्ड तुरंत सूचित',
+    'sos-dlg-title': 'SOS अलर्ट भेजें?',
+    'sos-dlg-body':  'यह आपके फ्लैट नंबर और स्थान के साथ सभी सुरक्षा गार्डों और समिति को तुरंत सूचित करेगा।',
+    'pay-dlg-title': 'UPI भुगतान',
+    'pay-dlg-body':  'Razorpay के साथ UPI एकीकरण अगले बिल्ड में आएगा। अभी के लिए यह एक डेमो है।',
+    'footer-text':'जुबली हिल्स कनेक्ट · डेमो प्रोटोटाइप · बाणेर, पुणे',
+    'send-otp-btn':'OTP भेजें',
+    'verify-otp-btn':'जारी रखें',
+    'btn-cancel':'रद्द करें',
+    'btn-cancel-pay':'समझ गया',
+    'sos-confirm':'अभी अलर्ट करें',
+  },
+  mr: {
+    tagline:      'समुदाय जीवन, जोडलेले',
+    'login-title':'परत स्वागत आहे',
+    'login-sub':  'सुरू ठेवण्यासाठी तुमचा नोंदणीकृत मोबाइल नंबर प्रविष्ट करा।',
+    'phone-label':'मोबाइल नंबर',
+    'otp-hint':   "आम्ही 4-अंकी कोड पाठवला आहे ",
+    'login-note': 'हे एक डेमो आहे — कोणताही मोबाइल नंबर आणि कोणताही 4-अंकी कोड काम करेल.',
+    'greet-hi':   'सुप्रभात,',
+    'dues-lbl':   'देखभाल थकबाकी',
+    'dues-due':   'देय 5 जुलै 2026 · जून तिमाही',
+    'pay-btn':    'UPI ने आता भरा',
+    'qa-visitor': 'पाहुणे',
+    'qa-book':    'बुक',
+    'qa-complaint':'तक्रार',
+    'qa-delivery':'डिलिव्हरी',
+    'notice-title':'सूचना फलक',
+    'n1':         'पाण्याचा टँकर — टॉवर A, 2 वा.',
+    'n1s':        'पुरवठा देखभाल · समिती',
+    'n2':         'गणेशोत्सव बैठक',
+    'n2s':        'क्लबहाऊस · शनि 7 वा.',
+    'n3':         'स्वच्छतेनंतर तलाव सुरू',
+    'n3s':        'सकाळी 6 – रात्री 9 स्लॉट खुले',
+    'sos-sub':    'आणीबाणीसाठी दाबून ठेवा — सुरक्षा त्वरित सूचित',
+    'sos-dlg-title': 'SOS अलर्ट पाठवायचा?',
+    'sos-dlg-body':  'हे तुमच्या फ्लॅट नंबर आणि स्थानासह सर्व सुरक्षा रक्षकांना आणि समितीला त्वरित सूचित करेल.',
+    'pay-dlg-title': 'UPI पेमेंट',
+    'pay-dlg-body':  'Razorpay सह UPI एकत्रीकरण पुढील बिल्डमध्ये येईल. सध्या हे डेमो आहे.',
+    'footer-text':'जुबिली हिल्स कनेक्ट · डेमो प्रोटोटाइप · बाणेर, पुणे',
+    'send-otp-btn':'OTP पाठवा',
+    'verify-otp-btn':'सुरू ठेवा',
+    'btn-cancel':'रद्द करा',
+    'btn-cancel-pay':'समजले',
+    'sos-confirm':'आत्ता अलर्ट करा',
+  }
+};
+
+let currentLang = 'en';
+
+function applyLang(l) {
+  currentLang = l;
+  const d = strings[l];
+  for (const [id, text] of Object.entries(d)) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = text;
+  }
+  // buttons that use textContent but aren't ids
+  const sendBtn = document.getElementById('send-otp-btn');
+  if (sendBtn) sendBtn.textContent = d['send-otp-btn'];
+  const verifyBtn = document.getElementById('verify-otp-btn');
+  if (verifyBtn) verifyBtn.textContent = d['verify-otp-btn'];
+  const payBtn = document.getElementById('pay-btn');
+  if (payBtn) payBtn.textContent = d['pay-btn'];
+  document.documentElement.lang = l;
+}
+
+document.querySelectorAll('#lang-seg button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('#lang-seg button').forEach(b => b.classList.remove('on'));
+    btn.classList.add('on');
+    applyLang(btn.dataset.l);
+  });
+});
+
+/* ────────────────────────────────────────
+   LOGIN FLOW
+   ──────────────────────────────────────── */
+let enteredPhone = '';
+
+document.getElementById('send-otp-btn').addEventListener('click', () => {
+  const raw = document.getElementById('phone-input').value.replace(/\D/g,'');
+  if (raw.length < 10) {
+    document.getElementById('phone-input').focus();
+    document.getElementById('phone-input').style.borderColor = 'var(--red)';
+    return;
+  }
+  document.getElementById('phone-input').style.borderColor = '';
+  enteredPhone = raw;
+  document.getElementById('otp-phone').textContent = '+91 ' + raw;
+  document.getElementById('step-phone').style.display = 'none';
+  document.getElementById('step-otp').classList.add('show');
+  // focus first OTP box
+  document.querySelector('.otp-box').focus();
+});
+
+// OTP boxes — auto-advance
+document.querySelectorAll('.otp-box').forEach((box, i, all) => {
+  box.addEventListener('input', () => {
+    box.value = box.value.replace(/\D/,'').slice(-1);
+    if (box.value && i < all.length - 1) all[i + 1].focus();
+  });
+  box.addEventListener('keydown', e => {
+    if (e.key === 'Backspace' && !box.value && i > 0) all[i - 1].focus();
+  });
+});
+
+document.getElementById('verify-otp-btn').addEventListener('click', () => {
+  const boxes = document.querySelectorAll('.otp-box');
+  const code = Array.from(boxes).map(b => b.value).join('');
+  if (code.length < 4) { boxes[0].focus(); return; }
+  // Any code works — this is a demo
+  document.getElementById('login-view').classList.remove('active');
+  document.getElementById('home-view').classList.add('active');
+});
+
+// Also allow Enter key on phone input
+document.getElementById('phone-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') document.getElementById('send-otp-btn').click();
+});
+
+/* ────────────────────────────────────────
+   SOS
+   ──────────────────────────────────────── */
+document.getElementById('sos-btn').addEventListener('click', () => {
+  document.getElementById('sos-overlay').classList.add('open');
+});
+document.getElementById('sos-cancel').addEventListener('click', () => {
+  document.getElementById('sos-overlay').classList.remove('open');
+});
+document.getElementById('sos-confirm').addEventListener('click', () => {
+  document.getElementById('sos-overlay').classList.remove('open');
+  // Show a brief feedback
+  const strip = document.querySelector('.sos-strip');
+  strip.style.background = 'var(--green-soft)';
+  strip.style.borderColor = 'var(--green)';
+  const txt = strip.querySelector('.sos-text b');
+  const oldText = txt.textContent;
+  txt.textContent = '✓ Guards alerted';
+  txt.style.color = 'var(--green)';
+  setTimeout(() => {
+    strip.style.background = '';
+    strip.style.borderColor = '';
+    txt.textContent = oldText;
+    txt.style.color = '';
+  }, 3500);
+});
+// close overlays on backdrop click
+document.getElementById('sos-overlay').addEventListener('click', e => {
+  if (e.target === e.currentTarget) document.getElementById('sos-overlay').classList.remove('open');
+});
+
+/* ────────────────────────────────────────
+   PAY
+   ──────────────────────────────────────── */
+document.getElementById('pay-btn').addEventListener('click', () => {
+  document.getElementById('pay-overlay').classList.add('open');
+});
+document.getElementById('pay-close').addEventListener('click', () => {
+  document.getElementById('pay-overlay').classList.remove('open');
+});
+document.getElementById('pay-overlay').addEventListener('click', e => {
+  if (e.target === e.currentTarget) document.getElementById('pay-overlay').classList.remove('open');
+});
+</script>
+</body>
+</html>
