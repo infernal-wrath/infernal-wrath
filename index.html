@@ -2099,21 +2099,22 @@ document.getElementById('verify-otp-btn').addEventListener('click', async () => 
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ phone: enteredPhone, code }),
     });
-    const data = await resp.json();
+    // Parse JSON safely — a 4xx response with an unexpected body should still show the error
+    const data = await resp.json().catch(() => ({}));
     if (!resp.ok) {
       btn.disabled = false; btn.textContent = 'Continue';
       boxes.forEach(b => b.style.borderColor = 'var(--red)');
-      alert(data.error || 'Login failed. Please try again.');
+      alert(data.error || `Server returned ${resp.status}. Please try again.`);
       return;
     }
     boxes.forEach(b => b.style.borderColor = '');
-    // Store the token so we can use it in future API calls
     sessionStorage.setItem('jh_token', data.token);
     sessionStorage.setItem('jh_user', JSON.stringify(data.user));
     loginSuccess(data.user);
-  } catch {
+  } catch (err) {
+    console.error('verify fetch error:', err);
     btn.disabled = false; btn.textContent = 'Continue';
-    alert('Cannot reach the server. Please check your internet connection.');
+    alert('Cannot reach the server. Check your internet connection.\n\nError: ' + err.message);
   }
 });
 
