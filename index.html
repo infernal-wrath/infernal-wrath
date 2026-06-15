@@ -2014,12 +2014,14 @@ const API_URL = 'https://jubilee-hills-connect.onrender.com';
 let enteredPhone = '';
 
 function loginSuccess(userData) {
-  document.getElementById('login-view').classList.remove('active');
+  const loginView = document.getElementById('login-view');
+  if (loginView) loginView.classList.remove('active');
   document.body.classList.add('logged-in');
-  if (userData && userData.name && userData.name !== 'Resident') {
+  const greetEl = document.getElementById('greet-name');
+  if (greetEl && userData && userData.name && userData.name !== 'Resident') {
     const firstName = userData.name.split(' ')[0];
     const flat = userData.flat || 'A-1203';
-    document.getElementById('greet-name').textContent = firstName + ' · ' + flat;
+    greetEl.textContent = firstName + ' · ' + flat;
   }
   buildWeekStrip();
   renderSlots();
