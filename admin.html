@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <title>Admin — Jubilee Hills Connect</title>
+  <style>
+    :root {
+      --brand:  #8B1D1D;
+      --green:  #2D6A4F;
+      --brass:  #B5860D;
+      --red:    #C0392B;
+      --blue:   #1A5276;
+      --bg:     #F5F1EC;
+      --card:   #FFFFFF;
+      --text:   #1A1A1A;
+      --muted:  #6B6B6B;
+      --border: #E0D8D0;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+           background: var(--bg); color: var(--text); min-height: 100vh; }
+
+    /* ── Login ─────────────────────────────────────────────────── */
+    #login-screen {
+      display: flex; align-items: center; justify-content: center;
+      min-height: 100vh; padding: 24px;
+    }
+    .login-box {
+      background: var(--card); border-radius: 16px; padding: 36px 28px;
+      width: 100%; max-width: 380px; box-shadow: 0 4px 24px rgba(0,0,0,.10);
+    }
+    .login-logo { font-size: 36px; text-align: center; margin-bottom: 8px; }
+    .login-title { font-size: 22px; font-weight: 700; text-align: center; }
+    .login-sub   { font-size: 13px; color: var(--muted); text-align: center; margin-bottom: 28px; }
+    .field {
+      width: 100%; padding: 12px 14px; border: 1.5px solid var(--border);
+      border-radius: 10px; font-size: 15px; margin-bottom: 12px; outline: none;
+      transition: border-color .2s;
+    }
+    .field:focus { border-color: var(--brand); }
+    .btn-primary {
+      width: 100%; padding: 13px; background: var(--brand); color: #fff;
+      border: none; border-radius: 10px; font-size: 15px; font-weight: 600;
+      cursor: pointer; transition: opacity .2s;
+    }
+    .btn-primary:disabled { opacity: .55; cursor: default; }
+    .otp-row { display: flex; gap: 10px; justify-content: center; margin-bottom: 16px; }
+    .otp-box {
+      width: 52px; height: 56px; text-align: center; font-size: 22px;
+      font-weight: 700; border: 2px solid var(--border); border-radius: 10px;
+      outline: none; transition: border-color .2s;
+    }
+    .otp-box:focus { border-color: var(--brand); }
+    .otp-hint { font-size: 13px; color: var(--muted); text-align: center; margin-bottom: 16px; }
+    #step-otp  { display: none; }
+
+    /* ── Dashboard ─────────────────────────────────────────────── */
+    #dashboard  { display: none; }
+    .dash-header {
+      background: var(--brand); color: #fff;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 20px;
+      position: sticky; top: 0; z-index: 10;
+    }
+    .dash-header-title { font-size: 16px; font-weight: 700; }
+    .dash-header-sub   { font-size: 12px; opacity: .75; }
+    .dash-header-name  { font-size: 13px; opacity: .85; text-align: right; }
+
+    /* Tabs */
+    .tabs {
+      display: flex; background: var(--card);
+      border-bottom: 1.5px solid var(--border);
+      position: sticky; top: 56px; z-index: 9;
+      overflow-x: auto;
+    }
+    .tab-btn {
+      flex: 1; min-width: 80px; padding: 12px 6px; font-size: 13px; font-weight: 600;
+      border: none; background: none; color: var(--muted); cursor: pointer;
+      border-bottom: 3px solid transparent; transition: all .2s; white-space: nowrap;
+    }
+    .tab-btn.active { color: var(--brand); border-bottom-color: var(--brand); }
+
+    /* Content area */
+    .tab-content { display: none; padding: 16px; max-width: 800px; margin: 0 auto; }
+    .tab-content.active { display: block; }
+
+    /* Cards */
+    .card {
+      background: var(--card); border-radius: 14px; padding: 18px;
+      margin-bottom: 14px; box-shadow: 0 1px 4px rgba(0,0,0,.06);
+    }
+    .card-title { font-size: 14px; font-weight: 700; margin-bottom: 14px; color: var(--brand); }
+
+    /* Form elements */
+    .form-row { display: flex; gap: 8px; flex-wrap: wrap; }
+    .form-row .field { flex: 1; min-width: 140px; }
+    select.field { appearance: none; background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23888' stroke-width='1.5' fill='none'/%3E%3C/svg%3E") no-repeat right 12px center; }
+    .small-btn {
+      padding: 6px 14px; border-radius: 8px; font-size: 12px; font-weight: 600;
+      cursor: pointer; border: none; transition: opacity .2s;
+    }
+    .small-btn:disabled { opacity: .5; cursor: default; }
+    .btn-green  { background: var(--green); color: #fff; }
+    .btn-red    { background: var(--red);   color: #fff; }
+    .btn-brass  { background: var(--brass); color: #fff; }
+    .btn-brand  { background: var(--brand); color: #fff; }
+
+    /* Table */
+    .tbl { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .tbl th { text-align: left; padding: 8px 10px; font-size: 11px; text-transform: uppercase;
+              color: var(--muted); border-bottom: 1.5px solid var(--border); }
+    .tbl td { padding: 10px 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
+    .tbl tr:last-child td { border-bottom: none; }
+
+    /* Badge */
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+    .badge-open        { background: #FEF3C7; color: #92400E; }
+    .badge-in_progress { background: #DBEAFE; color: #1E40AF; }
+    .badge-resolved    { background: #D1FAE5; color: #065F46; }
+    .badge-escalated   { background: #FEE2E2; color: #991B1B; }
+    .badge-pending     { background: #FEF3C7; color: #92400E; }
+    .badge-paid        { background: #D1FAE5; color: #065F46; }
+    .badge-admin       { background: #EDE9FE; color: #4C1D95; }
+    .badge-resident    { background: #F3F4F6; color: #374151; }
+
+    .empty-msg { text-align: center; color: var(--muted); padding: 24px; font-size: 13px; }
+    .status-select { font-size: 12px; padding: 4px 8px; border: 1px solid var(--border);
+                     border-radius: 6px; background: #fff; }
+    .err { color: var(--red); font-size: 12px; margin-top: 6px; }
+    .success-msg { color: var(--green); font-size: 12px; margin-top: 6px; font-weight: 600; }
+  </style>
+</head>
+<body>
+
+<!-- ── LOGIN ──────────────────────────────────────────────────────── -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">🏛️</div>
+    <div class="login-title">Admin Panel</div>
+    <div class="login-sub">Jubilee Hills Connect · Committee only</div>
+
+    <div id="step-phone">
+      <input class="field" id="phone-input" type="tel" inputmode="numeric"
+             maxlength="10" placeholder="Mobile number (10 digits)">
+      <button class="btn-primary" id="send-otp-btn">Send OTP</button>
+      <div id="phone-err" class="err"></div>
+    </div>
+
+    <div id="step-otp">
+      <p class="otp-hint">Code sent to <b id="otp-phone-label"></b></p>
+      <div class="otp-row">
+        <input type="tel" inputmode="numeric" maxlength="1" class="otp-box">
+        <input type="tel" inputmode="numeric" maxlength="1" class="otp-box">
+        <input type="tel" inputmode="numeric" maxlength="1" class="otp-box">
+        <input type="tel" inputmode="numeric" maxlength="1" class="otp-box">
+      </div>
+      <button class="btn-primary" id="verify-otp-btn">Continue</button>
+      <div id="otp-err" class="err"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── DASHBOARD ──────────────────────────────────────────────────── -->
+<div id="dashboard">
+  <div class="dash-header">
+    <div>
+      <div class="dash-header-title">Admin Panel</div>
+      <div class="dash-header-sub">Jubilee Hills Connect</div>
+    </div>
+    <div class="dash-header-name" id="admin-name"></div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="notices">📢 Notices</button>
+    <button class="tab-btn" data-tab="complaints">🛠️ Complaints</button>
+    <button class="tab-btn" data-tab="residents">👥 Residents</button>
+    <button class="tab-btn" data-tab="dues">💰 Dues</button>
+  </div>
+
+  <!-- ── NOTICES ─────────────────────────────────────────────────── -->
+  <div id="tab-notices" class="tab-content active">
+    <div class="card">
+      <div class="card-title">Post new notice</div>
+      <input class="field" id="n-title"    placeholder="Title (e.g. Water tanker tomorrow 4 PM)">
+      <div class="form-row">
+        <input class="field" id="n-subtitle" placeholder="Subtitle (e.g. Tower A affected)">
+        <input class="field" id="n-by"       placeholder="Posted by (e.g. Secretary)">
+      </div>
+      <button class="small-btn btn-brand" id="post-notice-btn">Post notice</button>
+      <div id="notice-form-msg"></div>
+    </div>
+    <div id="notices-list"></div>
+  </div>
+
+  <!-- ── COMPLAINTS ─────────────────────────────────────────────── -->
+  <div id="tab-complaints" class="tab-content">
+    <div id="complaints-admin"></div>
+  </div>
+
+  <!-- ── RESIDENTS ──────────────────────────────────────────────── -->
+  <div id="tab-residents" class="tab-content">
+    <div class="card">
+      <div class="card-title">Add resident</div>
+      <div class="form-row">
+        <input class="field" id="r-flat"  placeholder="Flat no. (e.g. A-1203)">
+        <input class="field" id="r-name"  placeholder="Full name">
+      </div>
+      <div class="form-row">
+        <input class="field" id="r-phone" type="tel" inputmode="numeric"
+               maxlength="10" placeholder="Mobile (10 digits)">
+        <select class="field" id="r-role">
+          <option value="resident">Resident</option>
+          <option value="admin">Admin (committee)</option>
+        </select>
+      </div>
+      <button class="small-btn btn-brand" id="add-resident-btn">Add resident</button>
+      <div id="resident-form-msg"></div>
+    </div>
+    <div id="residents-list"></div>
+  </div>
+
+  <!-- ── DUES ───────────────────────────────────────────────────── -->
+  <div id="tab-dues" class="tab-content">
+    <div class="card">
+      <div class="card-title">Add maintenance due</div>
+      <div class="form-row">
+        <input class="field" id="d-flat"   placeholder="Flat no. (e.g. A-1203)">
+        <input class="field" id="d-amount" type="number" placeholder="Amount (₹)">
+      </div>
+      <div class="form-row">
+        <input class="field" id="d-period" placeholder="Period (e.g. June 2026)">
+        <input class="field" id="d-due"    type="date">
+      </div>
+      <button class="small-btn btn-brand" id="add-due-btn">Add due</button>
+      <div id="due-form-msg"></div>
+    </div>
+    <div id="dues-list"></div>
+  </div>
+</div>
+
+<script>
+const API_URL   = 'https://jubilee-hills-connect.onrender.com';
+let adminPhone  = '';
+
+// ── helpers ────────────────────────────────────────────────────────
+function h(phone) { return { 'Content-Type': 'application/json', 'X-Phone': phone }; }
+
+function showMsg(el, msg, isErr) {
+  el.textContent = msg;
+  el.className = isErr ? 'err' : 'success-msg';
+  setTimeout(() => { el.textContent = ''; }, 4000);
+}
+
+// ── TABS ───────────────────────────────────────────────────────────
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+    // Reload data when switching tabs
+    if (btn.dataset.tab === 'notices')    loadNotices();
+    if (btn.dataset.tab === 'complaints') loadComplaints();
+    if (btn.dataset.tab === 'residents')  loadResidents();
+    if (btn.dataset.tab === 'dues')       loadDues();
+  });
+});
+
+// ── OTP LOGIN ──────────────────────────────────────────────────────
+document.getElementById('send-otp-btn').addEventListener('click', async () => {
+  const raw = document.getElementById('phone-input').value.replace(/\D/g, '');
+  const errEl = document.getElementById('phone-err');
+  if (raw.length !== 10) { errEl.textContent = 'Enter a 10-digit mobile number.'; return; }
+  errEl.textContent = '';
+  const btn = document.getElementById('send-otp-btn');
+  btn.disabled = true; btn.textContent = 'Sending…';
+  try {
+    const resp = await fetch(API_URL + '/api/auth/otp/request', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ phone: raw }),
+    });
+    const data = await resp.json().catch(() => ({}));
+    btn.disabled = false; btn.textContent = 'Send OTP';
+    if (!resp.ok) { errEl.textContent = data.error || 'Failed. Try again.'; return; }
+    adminPhone = raw;
+    document.getElementById('otp-phone-label').textContent = '+91 ' + raw;
+    document.getElementById('step-phone').style.display = 'none';
+    document.getElementById('step-otp').style.display   = 'block';
+    document.querySelector('.otp-box').focus();
+  } catch {
+    btn.disabled = false; btn.textContent = 'Send OTP';
+    errEl.textContent = 'Cannot reach server.';
+  }
+});
+
+document.querySelectorAll('.otp-box').forEach((box, i, all) => {
+  box.addEventListener('input', () => {
+    box.value = box.value.replace(/\D/, '').slice(-1);
+    if (box.value && i < all.length - 1) all[i + 1].focus();
+  });
+  box.addEventListener('keydown', e => {
+    if (e.key === 'Backspace' && !box.value && i > 0) all[i - 1].focus();
+  });
+});
+
+document.getElementById('verify-otp-btn').addEventListener('click', async () => {
+  const code = Array.from(document.querySelectorAll('.otp-box')).map(b => b.value).join('');
+  const errEl = document.getElementById('otp-err');
+  if (code.length < 4) { errEl.textContent = 'Enter all 4 digits.'; return; }
+  errEl.textContent = '';
+  const btn = document.getElementById('verify-otp-btn');
+  btn.disabled = true; btn.textContent = 'Checking…';
+  try {
+    const resp = await fetch(API_URL + '/api/auth/otp/verify', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ phone: adminPhone, code }),
+    });
+    const data = await resp.json().catch(() => ({}));
+    btn.disabled = false; btn.textContent = 'Continue';
+    if (!resp.ok) { errEl.textContent = data.error || 'Incorrect code.'; return; }
+    if (data.user && data.user.role !== 'admin') {
+      errEl.textContent = 'This number is not registered as an admin.';
+      return;
+    }
+    // Save session
+    sessionStorage.setItem('jh_phone', adminPhone);
+    sessionStorage.setItem('jh_user',  JSON.stringify(data.user));
+    // Show dashboard
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('dashboard').style.display    = 'block';
+    document.getElementById('admin-name').textContent = data.user?.name || adminPhone;
+    loadNotices();
+  } catch (err) {
+    btn.disabled = false; btn.textContent = 'Continue';
+    errEl.textContent = 'Cannot reach server. ' + err.message;
+  }
+});
+
+// ── NOTICES ────────────────────────────────────────────────────────
+async function loadNotices() {
+  const list = document.getElementById('notices-list');
+  list.innerHTML = '<div class="empty-msg">Loading…</div>';
+  try {
+    const resp = await fetch(API_URL + '/api/admin/notices', { headers: h(adminPhone) });
+    const notices = await resp.json();
+    if (!Array.isArray(notices) || notices.length === 0) {
+      list.innerHTML = '<div class="empty-msg">No notices yet.</div>'; return;
+    }
+    list.innerHTML = `<div class="card"><table class="tbl">
+      <thead><tr><th>Title</th><th>Posted by</th><th>Date</th><th></th></tr></thead>
+      <tbody>${notices.map(n => `<tr>
+        <td><b>${n.title}</b>${n.subtitle ? '<br><small style="color:var(--muted)">' + n.subtitle + '</small>' : ''}</td>
+        <td>${n.posted_by || '—'}</td>
+        <td>${new Date(n.posted_at).toLocaleDateString('en-IN', {day:'numeric',month:'short'})}</td>
+        <td><button class="small-btn btn-red" onclick="deleteNotice('${n.id}')">Delete</button></td>
+      </tr>`).join('')}
+      </tbody></table></div>`;
+  } catch(e) { list.innerHTML = '<div class="empty-msg">Failed to load.</div>'; }
+}
+
+document.getElementById('post-notice-btn').addEventListener('click', async () => {
+  const title  = document.getElementById('n-title').value.trim();
+  const sub    = document.getElementById('n-subtitle').value.trim();
+  const by     = document.getElementById('n-by').value.trim();
+  const msgEl  = document.getElementById('notice-form-msg');
+  if (!title) { showMsg(msgEl, 'Title is required.', true); return; }
+  const btn = document.getElementById('post-notice-btn');
+  btn.disabled = true; btn.textContent = 'Posting…';
+  try {
+    const resp = await fetch(API_URL + '/api/admin/notices', {
+      method: 'POST', headers: h(adminPhone),
+      body: JSON.stringify({ title, subtitle: sub, posted_by: by || 'Committee' }),
+    });
+    const data = await resp.json().catch(() => ({}));
+    btn.disabled = false; btn.textContent = 'Post notice';
+    if (!resp.ok) { showMsg(msgEl, data.error || 'Failed.', true); return; }
+    showMsg(msgEl, 'Notice posted!', false);
+    document.getElementById('n-title').value = '';
+    document.getElementById('n-subtitle').value = '';
+    document.getElementById('n-by').value = '';
+    loadNotices();
+  } catch { btn.disabled = false; btn.textContent = 'Post notice'; showMsg(msgEl, 'Server error.', true); }
+});
+
+async function deleteNotice(id) {
+  if (!confirm('Delete this notice?')) return;
+  try {
+    await fetch(API_URL + '/api/admin/notices/' + id, { method: 'DELETE', headers: h(adminPhone) });
+    loadNotices();
+  } catch {}
+}
+
+// ── COMPLAINTS ─────────────────────────────────────────────────────
+async function loadComplaints() {
+  const el = document.getElementById('complaints-admin');
+  el.innerHTML = '<div class="empty-msg">Loading…</div>';
+  try {
+    const resp = await fetch(API_URL + '/api/admin/complaints', { headers: h(adminPhone) });
+    const list = await resp.json();
+    if (!Array.isArray(list) || list.length === 0) {
+      el.innerHTML = '<div class="empty-msg">No complaints yet.</div>'; return;
+    }
+    el.innerHTML = `<div class="card"><table class="tbl">
+      <thead><tr><th>Ref</th><th>Flat</th><th>Title</th><th>Status</th><th>Assign to</th><th></th></tr></thead>
+      <tbody>${list.map(c => `<tr>
+        <td style="white-space:nowrap;font-size:11px">${c.ref}</td>
+        <td>${c.flat_number}</td>
+        <td><b>${c.title}</b><br><small style="color:var(--muted)">${c.category}</small></td>
+        <td><span class="badge badge-${c.status}">${c.status.replace('_',' ')}</span></td>
+        <td><input style="font-size:12px;padding:4px 6px;border:1px solid var(--border);border-radius:6px;width:100px"
+               id="assign-${c.id}" placeholder="Name" value="${c.assigned_to || ''}"></td>
+        <td style="white-space:nowrap">
+          <select class="status-select" id="status-${c.id}">
+            <option value="open"        ${c.status==='open'?'selected':''}>Open</option>
+            <option value="in_progress" ${c.status==='in_progress'?'selected':''}>In progress</option>
+            <option value="resolved"    ${c.status==='resolved'?'selected':''}>Resolved</option>
+            <option value="escalated"   ${c.status==='escalated'?'selected':''}>Escalated</option>
+          </select>
+          <button class="small-btn btn-green" style="margin-top:4px"
+                  onclick="updateComplaint('${c.id}')">Save</button>
+        </td>
+      </tr>`).join('')}
+      </tbody></table></div>`;
+  } catch(e) { el.innerHTML = '<div class="empty-msg">Failed to load.</div>'; }
+}
+
+async function updateComplaint(id) {
+  const status     = document.getElementById('status-' + id).value;
+  const assignedTo = document.getElementById('assign-' + id).value.trim();
+  try {
+    await fetch(API_URL + '/api/admin/complaints/' + id, {
+      method: 'PATCH', headers: h(adminPhone),
+      body: JSON.stringify({ status, assigned_to: assignedTo || null }),
+    });
+    loadComplaints();
+  } catch { alert('Failed to update.'); }
+}
+
+// ── RESIDENTS ──────────────────────────────────────────────────────
+async function loadResidents() {
+  const el = document.getElementById('residents-list');
+  el.innerHTML = '<div class="empty-msg">Loading…</div>';
+  try {
+    const resp = await fetch(API_URL + '/api/admin/residents', { headers: h(adminPhone) });
+    const list = await resp.json();
+    if (!Array.isArray(list) || list.length === 0) {
+      el.innerHTML = '<div class="empty-msg">No residents yet.</div>'; return;
+    }
+    el.innerHTML = `<div class="card"><table class="tbl">
+      <thead><tr><th>Flat</th><th>Name</th><th>Phone</th><th>Role</th><th></th></tr></thead>
+      <tbody>${list.map(r => `<tr>
+        <td>${r.flat_number}</td>
+        <td>${r.full_name}</td>
+        <td>${r.phone}</td>
+        <td><span class="badge badge-${r.role}">${r.role}</span></td>
+        <td><button class="small-btn btn-red" onclick="deleteResident('${r.id}')">Remove</button></td>
+      </tr>`).join('')}
+      </tbody></table></div>`;
+  } catch { el.innerHTML = '<div class="empty-msg">Failed to load.</div>'; }
+}
+
+document.getElementById('add-resident-btn').addEventListener('click', async () => {
+  const flat  = document.getElementById('r-flat').value.trim().toUpperCase();
+  const name  = document.getElementById('r-name').value.trim();
+  const phone = document.getElementById('r-phone').value.replace(/\D/g, '');
+  const role  = document.getElementById('r-role').value;
+  const msgEl = document.getElementById('resident-form-msg');
+  if (!flat || !name || phone.length !== 10) {
+    showMsg(msgEl, 'Flat number, name and 10-digit phone are all required.', true); return;
+  }
+  const btn = document.getElementById('add-resident-btn');
+  btn.disabled = true; btn.textContent = 'Adding…';
+  try {
+    const resp = await fetch(API_URL + '/api/admin/residents', {
+      method: 'POST', headers: h(adminPhone),
+      body: JSON.stringify({ flat_number: flat, full_name: name, phone, role }),
+    });
+    const data = await resp.json().catch(() => ({}));
+    btn.disabled = false; btn.textContent = 'Add resident';
+    if (!resp.ok) { showMsg(msgEl, data.error || 'Failed.', true); return; }
+    showMsg(msgEl, name + ' added to ' + flat + '!', false);
+    document.getElementById('r-flat').value = '';
+    document.getElementById('r-name').value = '';
+    document.getElementById('r-phone').value = '';
+    loadResidents();
+  } catch { btn.disabled = false; btn.textContent = 'Add resident'; showMsg(msgEl, 'Server error.', true); }
+});
+
+async function deleteResident(id) {
+  if (!confirm('Remove this resident?')) return;
+  try {
+    await fetch(API_URL + '/api/admin/residents/' + id, { method: 'DELETE', headers: h(adminPhone) });
+    loadResidents();
+  } catch {}
+}
+
+// ── DUES ───────────────────────────────────────────────────────────
+async function loadDues() {
+  const el = document.getElementById('dues-list');
+  el.innerHTML = '<div class="empty-msg">Loading…</div>';
+  try {
+    const resp = await fetch(API_URL + '/api/admin/dues', { headers: h(adminPhone) });
+    const list = await resp.json();
+    if (!Array.isArray(list) || list.length === 0) {
+      el.innerHTML = '<div class="empty-msg">No dues records yet.</div>'; return;
+    }
+    el.innerHTML = `<div class="card"><table class="tbl">
+      <thead><tr><th>Flat</th><th>Amount</th><th>Period</th><th>Due</th><th>Status</th><th></th></tr></thead>
+      <tbody>${list.map(d => `<tr>
+        <td>${d.flat_number}</td>
+        <td>₹${Number(d.amount).toLocaleString('en-IN')}</td>
+        <td>${d.period || '—'}</td>
+        <td>${new Date(d.due_date).toLocaleDateString('en-IN', {day:'numeric',month:'short',year:'numeric'})}</td>
+        <td><span class="badge badge-${d.status}">${d.status}</span></td>
+        <td>${d.status === 'pending'
+          ? `<button class="small-btn btn-green" onclick="markPaid('${d.id}')">Mark paid</button>`
+          : '✓'}</td>
+      </tr>`).join('')}
+      </tbody></table></div>`;
+  } catch { el.innerHTML = '<div class="empty-msg">Failed to load.</div>'; }
+}
+
+document.getElementById('add-due-btn').addEventListener('click', async () => {
+  const flat   = document.getElementById('d-flat').value.trim().toUpperCase();
+  const amount = document.getElementById('d-amount').value.trim();
+  const period = document.getElementById('d-period').value.trim();
+  const due    = document.getElementById('d-due').value;
+  const msgEl  = document.getElementById('due-form-msg');
+  if (!flat || !amount || !due) {
+    showMsg(msgEl, 'Flat, amount and due date are required.', true); return;
+  }
+  const btn = document.getElementById('add-due-btn');
+  btn.disabled = true; btn.textContent = 'Adding…';
+  try {
+    const resp = await fetch(API_URL + '/api/admin/dues', {
+      method: 'POST', headers: h(adminPhone),
+      body: JSON.stringify({ flat_number: flat, amount: Number(amount), due_date: due, period }),
+    });
+    const data = await resp.json().catch(() => ({}));
+    btn.disabled = false; btn.textContent = 'Add due';
+    if (!resp.ok) { showMsg(msgEl, data.error || 'Failed.', true); return; }
+    showMsg(msgEl, 'Due added for ' + flat + '!', false);
+    document.getElementById('d-flat').value = '';
+    document.getElementById('d-amount').value = '';
+    document.getElementById('d-period').value = '';
+    document.getElementById('d-due').value = '';
+    loadDues();
+  } catch { btn.disabled = false; btn.textContent = 'Add due'; showMsg(msgEl, 'Server error.', true); }
+});
+
+async function markPaid(id) {
+  try {
+    await fetch(API_URL + '/api/admin/dues/' + id + '/pay', {
+      method: 'PATCH', headers: h(adminPhone),
+    });
+    loadDues();
+  } catch { alert('Failed to update.'); }
+}
+</script>
+</body>
+</html>

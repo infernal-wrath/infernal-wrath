@@ -2,8 +2,9 @@ const express = require('express');
 const cors    = require('cors');
 require('dotenv').config();
 
-const authRoutes = require('./routes/auth');
-const apiRoutes  = require('./routes/api');
+const authRoutes  = require('./routes/auth');
+const apiRoutes   = require('./routes/api');
+const adminRoutes = require('./routes/admin');
 
 const app = express();
 
@@ -15,8 +16,9 @@ app.get('/health', (_req, res) => {
   res.json({ status: 'ok', app: 'Jubilee Hills Connect', time: new Date() });
 });
 
-app.use('/api/auth', authRoutes);
-app.use('/api',      apiRoutes);
+app.use('/api/auth',  authRoutes);
+app.use('/api/admin', adminRoutes);
+app.use('/api',       apiRoutes);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
