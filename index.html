@@ -975,7 +975,7 @@ body.in-admin .bottom-nav { display: none !important; }
   <div class="max" style="padding-top:20px">
     <div class="card dues-card">
       <div class="dues-lbl" id="dues-lbl">Maintenance due</div>
-      <div class="dues-amt">₹ 4,200</div>
+      <div class="dues-amt" id="dues-amt">₹ 4,200</div>
       <div class="dues-due" id="dues-due">Due 5 July 2026 · June quarter</div>
       <button class="pay-btn" id="pay-btn">Pay now via UPI</button>
     </div>
@@ -995,7 +995,7 @@ body.in-admin .bottom-nav { display: none !important; }
       </button>
     </div>
 
-    <div class="card">
+    <div class="card" id="notice-board-card">
       <div class="sec-title" id="notice-title">Notice board</div>
       <div class="notice-row">
         <div class="dot" style="background:var(--red)"></div>
@@ -1078,7 +1078,7 @@ body.in-admin .bottom-nav { display: none !important; }
 
     <!-- My bookings -->
     <div class="sec-title" style="margin-top:6px" id="my-bk-title">My bookings</div>
-    <div class="card">
+    <div class="card" id="my-bookings-card">
       <div class="booking-row">
         <div class="booking-icon">🏛️</div>
         <div>
@@ -1306,6 +1306,7 @@ body.in-admin .bottom-nav { display: none !important; }
   <div class="max" style="padding-top:16px">
     <button class="raise-btn" id="raise-complaint-btn">+ Raise a complaint</button>
 
+    <div id="complaints-list">
     <!-- In Progress -->
     <div class="complaint-card">
       <div class="complaint-top">
@@ -1338,6 +1339,7 @@ body.in-admin .bottom-nav { display: none !important; }
       <div class="complaint-sub" id="h-t3s">SLA breached · raised to Facility Mgr</div>
       <div class="sla-bar sla-late"><span class="sla-fill" style="width:100%"></span></div>
     </div>
+    </div><!-- /complaints-list -->
 
     <div class="footer">Jubilee Hills Connect · demo prototype · Baner, Pune</div>
   </div>
@@ -2026,6 +2028,134 @@ function loginSuccess(userData) {
   buildWeekStrip();
   renderSlots();
   showScreen('home');
+  // Load live data from the backend
+  loadHomeData();
+  loadAmenityBookings();
+  loadComplaints();
+}
+
+/* ────────────────────────────────────────
+   LIVE DATA LOADING
+   ──────────────────────────────────────── */
+
+function ageLabel(date) {
+  const h = Math.floor((Date.now() - date) / 3600000);
+  if (h < 1) return 'now';
+  if (h < 24) return h + 'h';
+  return Math.floor(h / 24) + 'd';
+}
+
+async function loadHomeData() {
+  if (!API_URL) return;
+  const phone = sessionStorage.getItem('jh_phone');
+
+  // Notices
+  try {
+    const resp = await fetch(API_URL + '/api/notices');
+    const notices = await resp.json();
+    const card = document.getElementById('notice-board-card');
+    if (card && Array.isArray(notices) && notices.length > 0) {
+      const titleEl = card.querySelector('.sec-title');
+      const COLORS = ['var(--red)', 'var(--brass)', 'var(--green)', 'var(--blue)'];
+      card.innerHTML = '';
+      if (titleEl) card.appendChild(titleEl);
+      notices.forEach((n, i) => {
+        const row = document.createElement('div');
+        row.className = 'notice-row';
+        row.innerHTML = `<div class="dot" style="background:${COLORS[i % COLORS.length]}"></div>
+          <div><div class="notice-title">${n.title}</div><div class="notice-sub">${n.subtitle || ''}</div></div>
+          <div class="notice-time">${ageLabel(new Date(n.posted_at))}</div>`;
+        card.appendChild(row);
+      });
+    }
+  } catch(e) { console.error('notices load:', e); }
+
+  // Dues
+  if (!phone) return;
+  try {
+    const resp = await fetch(API_URL + '/api/dues', { headers: { 'X-Phone': phone } });
+    const due = await resp.json();
+    const amtEl  = document.getElementById('dues-amt');
+    const dueEl  = document.getElementById('dues-due');
+    const payBtn = document.getElementById('pay-btn');
+    if (due.allPaid) {
+      if (amtEl)  amtEl.textContent  = '₹ 0';
+      if (dueEl)  dueEl.textContent  = 'All dues cleared ✓';
+      if (payBtn) payBtn.style.display = 'none';
+    } else if (due.amount) {
+      if (amtEl) amtEl.textContent = '₹ ' + Number(due.amount).toLocaleString('en-IN');
+      if (dueEl && due.due_date) {
+        const d = new Date(due.due_date);
+        const MO = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        dueEl.textContent = 'Due ' + d.getDate() + ' ' + MO[d.getMonth()] + ' ' + d.getFullYear() + (due.period ? ' · ' + due.period : '');
+      }
+    }
+  } catch(e) { console.error('dues load:', e); }
+}
+
+async function loadAmenityBookings() {
+  if (!API_URL) return;
+  const phone = sessionStorage.getItem('jh_phone');
+  if (!phone) return;
+  try {
+    const resp = await fetch(API_URL + '/api/amenities/bookings', { headers: { 'X-Phone': phone } });
+    const bookings = await resp.json();
+    const card = document.getElementById('my-bookings-card');
+    if (!card) return;
+    const ICONS = { ac0:'🏛️', ac1:'🎉', ac2:'🏊', ac3:'💪', ac4:'🏡' };
+    const MO   = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const DAY  = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    if (!Array.isArray(bookings) || bookings.length === 0) {
+      card.innerHTML = '<p style="font-size:13px;color:var(--muted);padding:12px 0;text-align:center">No upcoming bookings</p>';
+      return;
+    }
+    card.innerHTML = bookings.map(b => {
+      const d    = new Date(b.slot_date);
+      const when = DAY[d.getDay()] + ' ' + d.getDate() + ' ' + MO[d.getMonth()] + ' · ' + b.slot_time;
+      return `<div class="booking-row">
+        <div class="booking-icon">${ICONS[b.amenity_key] || '📅'}</div>
+        <div><div class="booking-name">${b.amenity_name}</div><div class="booking-when">${when}</div></div>
+        <div class="booking-ref">${b.ref}</div>
+      </div>`;
+    }).join('');
+  } catch(e) { console.error('bookings load:', e); }
+}
+
+async function loadComplaints() {
+  if (!API_URL) return;
+  const phone = sessionStorage.getItem('jh_phone');
+  if (!phone) return;
+  try {
+    const resp = await fetch(API_URL + '/api/complaints', { headers: { 'X-Phone': phone } });
+    const complaints = await resp.json();
+    const list = document.getElementById('complaints-list');
+    if (!list) return;
+    const open = Array.isArray(complaints) ? complaints.filter(c => ['open','in_progress','escalated'].includes(c.status)).length : 0;
+    const pill = document.querySelector('#help-view .fee-pill');
+    if (pill) pill.innerHTML = open + ' <span id="help-open">open</span>';
+    if (!Array.isArray(complaints) || complaints.length === 0) {
+      list.innerHTML = '<p style="font-size:13px;color:var(--muted);padding:12px;text-align:center">No complaints raised yet</p>';
+      return;
+    }
+    const STATUS = {
+      open:        { tag: 'tag-brass', label: 'Open' },
+      in_progress: { tag: 'tag-brass', label: 'In progress' },
+      resolved:    { tag: 'tag-green', label: 'Resolved' },
+      escalated:   { tag: 'tag-red',   label: 'Escalated' },
+    };
+    list.innerHTML = complaints.map(c => {
+      const { tag, label } = STATUS[c.status] || { tag: 'tag-brass', label: c.status };
+      const barCls  = c.status === 'resolved' ? 'sla-ok' : c.status === 'escalated' ? 'sla-late' : 'sla-warn';
+      const barW    = (c.status === 'resolved' || c.status === 'escalated') ? '100%' : '55%';
+      const sub     = c.status === 'resolved' ? 'Resolved ✓' : c.assigned_to ? 'Assigned to ' + c.assigned_to : 'Awaiting assignment';
+      return `<div class="complaint-card">
+        <div class="complaint-top"><span class="tag ${tag}">${label}</span><span class="ticket-no">${c.ref}</span></div>
+        <div class="complaint-title">${c.title}</div>
+        <div class="complaint-sub">${sub}</div>
+        <div class="sla-bar ${barCls}"><span class="sla-fill" style="width:${barW}"></span></div>
+      </div>`;
+    }).join('');
+  } catch(e) { console.error('complaints load:', e); }
 }
 
 document.getElementById('send-otp-btn').addEventListener('click', async () => {
@@ -2114,6 +2244,7 @@ document.getElementById('verify-otp-btn').addEventListener('click', async () => 
     boxes.forEach(b => b.style.borderColor = '');
     sessionStorage.setItem('jh_token', data.token);
     sessionStorage.setItem('jh_user', JSON.stringify(data.user));
+    sessionStorage.setItem('jh_phone', enteredPhone);
     loginSuccess(data.user);
   } catch (err) {
     console.error('verify fetch error:', err);
@@ -2236,6 +2367,7 @@ document.querySelectorAll('.amen-chip').forEach(chip => {
    BOOKING DIALOG
    ──────────────────────────────────────── */
 let bookingCounter = 43;
+let pendingBooking = null;
 
 function openBookingDialog(ai, dayOff, time) {
   const d = strings[currentLang];
@@ -2245,6 +2377,8 @@ function openBookingDialog(ai, dayOff, time) {
   const dateStr = `${dayNames[date.getDay()]} ${date.getDate()} ${months[date.getMonth()]}`;
   const amen = AMENITIES[ai];
   const amenName = d[amen.key] || document.getElementById(amen.key)?.textContent || '';
+  // Save selection so the confirm handler can send it to the API
+  pendingBooking = { amenityKey: amen.key, amenityName: amenName, slotDate: weekDates[dayOff].toISOString().split('T')[0], slotTime: time, fee: amen.fee };
 
   document.getElementById('bk-val-amen').textContent = amenName;
   document.getElementById('bk-val-date').textContent = dateStr;
@@ -2263,11 +2397,36 @@ document.getElementById('bk-cancel').addEventListener('click', () => {
   document.getElementById('bk-overlay').classList.remove('open');
 });
 
-document.getElementById('bk-confirm').addEventListener('click', () => {
-  const refNo = 'JH-B-' + String(bookingCounter++).padStart(4, '0');
-  document.getElementById('bk-ref-no').textContent = refNo;
-  document.getElementById('bk-pending').classList.add('hide');
-  document.getElementById('bk-success').classList.add('show');
+document.getElementById('bk-confirm').addEventListener('click', async () => {
+  const phone = sessionStorage.getItem('jh_phone');
+  const btn   = document.getElementById('bk-confirm');
+
+  if (!API_URL || !phone || !pendingBooking) {
+    const refNo = 'JH-B-' + String(bookingCounter++).padStart(4, '0');
+    document.getElementById('bk-ref-no').textContent = refNo;
+    document.getElementById('bk-pending').classList.add('hide');
+    document.getElementById('bk-success').classList.add('show');
+    return;
+  }
+
+  btn.disabled = true; btn.textContent = 'Booking…';
+  try {
+    const resp = await fetch(API_URL + '/api/amenities/book', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Phone': phone },
+      body: JSON.stringify(pendingBooking),
+    });
+    const data = await resp.json().catch(() => ({}));
+    btn.disabled = false; btn.textContent = 'Confirm';
+    if (!resp.ok) { alert(data.error || 'Booking failed. Please try again.'); return; }
+    document.getElementById('bk-ref-no').textContent = data.ref;
+    document.getElementById('bk-pending').classList.add('hide');
+    document.getElementById('bk-success').classList.add('show');
+    loadAmenityBookings();
+  } catch(e) {
+    btn.disabled = false; btn.textContent = 'Confirm';
+    alert('Cannot reach the server. Please try again.');
+  }
 });
 
 document.getElementById('bk-done').addEventListener('click', () => {
@@ -2504,9 +2663,10 @@ document.getElementById('raise-cancel').addEventListener('click', () => {
   document.getElementById('raise-overlay').classList.remove('open');
 });
 
-document.getElementById('raise-submit').addEventListener('click', () => {
+document.getElementById('raise-submit').addEventListener('click', async () => {
   const title = document.getElementById('raise-title-input').value.trim();
   const cat   = document.getElementById('raise-cat').value;
+  const desc  = document.getElementById('raise-desc-input')?.value?.trim() || '';
   if (!cat || !title) {
     if (!cat)   document.getElementById('raise-cat').style.borderColor = 'var(--red)';
     if (!title) document.getElementById('raise-title-input').style.borderColor = 'var(--red)';
@@ -2514,10 +2674,36 @@ document.getElementById('raise-submit').addEventListener('click', () => {
   }
   document.getElementById('raise-cat').style.borderColor = '';
   document.getElementById('raise-title-input').style.borderColor = '';
-  const ref = 'JH-2026-' + String(ticketCounter++).padStart(6, '0');
-  document.getElementById('new-ticket-no').textContent = ref;
-  document.getElementById('raise-pending').classList.add('hide');
-  document.getElementById('raise-success').classList.add('show');
+
+  const phone = sessionStorage.getItem('jh_phone');
+  const btn   = document.getElementById('raise-submit');
+
+  if (!API_URL || !phone) {
+    const ref = 'JH-2026-' + String(ticketCounter++).padStart(6, '0');
+    document.getElementById('new-ticket-no').textContent = ref;
+    document.getElementById('raise-pending').classList.add('hide');
+    document.getElementById('raise-success').classList.add('show');
+    return;
+  }
+
+  btn.disabled = true; btn.textContent = 'Submitting…';
+  try {
+    const resp = await fetch(API_URL + '/api/complaints', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Phone': phone },
+      body: JSON.stringify({ category: cat, title, description: desc }),
+    });
+    const data = await resp.json().catch(() => ({}));
+    btn.disabled = false; btn.textContent = 'Submit';
+    if (!resp.ok) { alert(data.error || 'Submission failed. Please try again.'); return; }
+    document.getElementById('new-ticket-no').textContent = data.ref;
+    document.getElementById('raise-pending').classList.add('hide');
+    document.getElementById('raise-success').classList.add('show');
+    loadComplaints();
+  } catch(e) {
+    btn.disabled = false; btn.textContent = 'Submit';
+    alert('Cannot reach the server. Please try again.');
+  }
 });
 
 document.getElementById('raise-done').addEventListener('click', () => {
