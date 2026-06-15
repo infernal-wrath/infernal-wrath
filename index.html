@@ -2005,9 +2005,26 @@ document.querySelectorAll('#lang-seg button').forEach(btn => {
 /* ────────────────────────────────────────
    LOGIN FLOW
    ──────────────────────────────────────── */
+
+// ⬇ After you deploy the backend to Railway, paste your Railway URL here.
+// Example: 'https://jubilee-hills-connect.up.railway.app'
+// Until then, leave it empty and the app falls back to the demo (any code works).
+const API_URL = '';
+
 let enteredPhone = '';
 
-document.getElementById('send-otp-btn').addEventListener('click', () => {
+function loginSuccess(userData) {
+  document.getElementById('login-view').classList.remove('active');
+  document.body.classList.add('logged-in');
+  if (userData && userData.name && userData.name !== 'Resident') {
+    document.getElementById('greet-name').textContent = userData.name.split(' ')[0];
+  }
+  buildWeekStrip();
+  renderSlots();
+  showScreen('home');
+}
+
+document.getElementById('send-otp-btn').addEventListener('click', async () => {
   const raw = document.getElementById('phone-input').value.replace(/\D/g,'');
   if (raw.length < 10) {
     const inp = document.getElementById('phone-input');
@@ -2016,9 +2033,39 @@ document.getElementById('send-otp-btn').addEventListener('click', () => {
   }
   document.getElementById('phone-input').style.borderColor = '';
   enteredPhone = raw;
+
+  const btn = document.getElementById('send-otp-btn');
+  btn.disabled = true; btn.textContent = 'Sending…';
+
+  if (API_URL) {
+    try {
+      const resp = await fetch(API_URL + '/api/auth/otp/request', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone: raw }),
+      });
+      const data = await resp.json();
+      if (!resp.ok) {
+        btn.disabled = false; btn.textContent = 'Send OTP';
+        alert(data.error || 'Something went wrong. Please try again.');
+        return;
+      }
+    } catch {
+      btn.disabled = false; btn.textContent = 'Send OTP';
+      alert('Cannot reach the server. Please check your internet connection.');
+      return;
+    }
+  }
+
+  btn.disabled = false; btn.textContent = 'Send OTP';
   document.getElementById('otp-phone').textContent = '+91 ' + raw;
   document.getElementById('step-phone').style.display = 'none';
   document.getElementById('step-otp').classList.add('show');
+  // Update hint based on mode
+  const note = document.getElementById('login-note');
+  if (API_URL) {
+    note.textContent = 'A real OTP has been requested. Check the Railway server logs for the 4-digit code during testing.';
+  }
   document.querySelector('.otp-box').focus();
 });
 
@@ -2032,15 +2079,42 @@ document.querySelectorAll('.otp-box').forEach((box, i, all) => {
   });
 });
 
-document.getElementById('verify-otp-btn').addEventListener('click', () => {
+document.getElementById('verify-otp-btn').addEventListener('click', async () => {
   const boxes = document.querySelectorAll('.otp-box');
   const code = Array.from(boxes).map(b => b.value).join('');
   if (code.length < 4) { boxes[0].focus(); return; }
-  document.getElementById('login-view').classList.remove('active');
-  document.body.classList.add('logged-in');
-  buildWeekStrip();
-  renderSlots();
-  showScreen('home');
+
+  if (!API_URL) {
+    // Demo mode — any 4 digits work
+    loginSuccess(null);
+    return;
+  }
+
+  const btn = document.getElementById('verify-otp-btn');
+  btn.disabled = true; btn.textContent = 'Checking…';
+
+  try {
+    const resp = await fetch(API_URL + '/api/auth/otp/verify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ phone: enteredPhone, code }),
+    });
+    const data = await resp.json();
+    if (!resp.ok) {
+      btn.disabled = false; btn.textContent = 'Continue';
+      boxes.forEach(b => b.style.borderColor = 'var(--red)');
+      alert(data.error || 'Login failed. Please try again.');
+      return;
+    }
+    boxes.forEach(b => b.style.borderColor = '');
+    // Store the token so we can use it in future API calls
+    sessionStorage.setItem('jh_token', data.token);
+    sessionStorage.setItem('jh_user', JSON.stringify(data.user));
+    loginSuccess(data.user);
+  } catch {
+    btn.disabled = false; btn.textContent = 'Continue';
+    alert('Cannot reach the server. Please check your internet connection.');
+  }
 });
 
 document.getElementById('phone-input').addEventListener('keydown', e => {
