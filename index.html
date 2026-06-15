@@ -533,6 +533,199 @@ body.logged-in .bottom-nav { display: flex; }
   #home-view, #amen-view { padding-top: 20px; }
   .greeting, .amen-head { padding-top: 10px; }
 }
+
+/* ============================================================
+   ADMIN BUTTON IN TOPBAR (shown after login)
+   ============================================================ */
+.admin-topbar-btn {
+  display: none;
+  padding: 6px 13px; border-radius: 10px;
+  border: 1px solid var(--line); background: var(--card);
+  color: var(--muted); font-family: inherit; font-size: 12px; font-weight: 600;
+  cursor: pointer; box-shadow: var(--shadow); white-space: nowrap;
+  transition: border-color .15s, color .15s;
+}
+.admin-topbar-btn:hover { border-color: var(--brass); color: var(--brass); }
+body.logged-in .admin-topbar-btn { display: block; }
+
+/* ============================================================
+   ADMIN DASHBOARD VIEW
+   ============================================================ */
+#admin-view {
+  padding: 28px 20px 48px;
+  min-height: calc(100dvh - 62px);
+}
+body.in-admin .bottom-nav { display: none !important; }
+
+.browser-wrap { max-width: 1160px; margin: 0 auto; }
+
+/* Fake browser chrome */
+.browser-bar {
+  display: flex; align-items: center; gap: 10px;
+  background: var(--card); border: 1px solid var(--line);
+  border-radius: 14px 14px 0 0; padding: 11px 18px;
+  border-bottom: 0;
+}
+.browser-dots { display: flex; gap: 6px; flex-shrink: 0; }
+.browser-dots span {
+  width: 11px; height: 11px; border-radius: 50%; display: block;
+}
+.browser-dots span:nth-child(1) { background: #E0795F; }
+.browser-dots span:nth-child(2) { background: #D6A45E; }
+.browser-dots span:nth-child(3) { background: #5BB489; }
+.browser-url {
+  margin: 0 auto; font-size: 12px; color: var(--muted);
+  background: var(--bg); padding: 5px 18px;
+  border-radius: 20px; border: 1px solid var(--line);
+  font-weight: 500;
+}
+.browser-back {
+  flex-shrink: 0; padding: 5px 14px; border-radius: 20px;
+  border: 1px solid var(--line); background: transparent;
+  color: var(--muted); font-family: inherit; font-size: 12px; font-weight: 600;
+  cursor: pointer; transition: border-color .15s, color .15s;
+}
+.browser-back:hover { border-color: var(--brass); color: var(--brass); }
+
+/* Admin layout — sidebar + main */
+.admin-layout {
+  display: grid; grid-template-columns: 210px 1fr;
+  background: var(--panel); border: 1px solid var(--line);
+  border-radius: 0 0 16px 16px; overflow: hidden; min-height: 540px;
+}
+@media (max-width: 700px) {
+  .admin-layout { grid-template-columns: 1fr; }
+  .admin-sidebar { display: none; }
+}
+
+/* Sidebar */
+.admin-sidebar {
+  background: var(--teal); padding: 20px 14px; color: #cfdad7;
+}
+.sidebar-logo {
+  display: flex; align-items: center; gap: 9px;
+  margin-bottom: 24px; padding: 0 4px;
+}
+.sidebar-logo .mark { width: 30px; height: 30px; border-radius: 9px; flex-shrink: 0; }
+.sidebar-logo .mark span { font-size: 13px; }
+.sidebar-logo b { color: #fff; font-family: 'Bricolage Grotesque'; font-size: 15px; }
+.sidebar-nav { display: flex; flex-direction: column; gap: 2px; }
+.slink {
+  display: flex; align-items: center; gap: 9px;
+  padding: 9px 12px; border-radius: 10px;
+  font-size: 13px; font-weight: 500; color: #aebfbb;
+  cursor: pointer; transition: background .15s, color .15s;
+  border: 0; background: transparent; font-family: inherit;
+  text-align: left; width: 100%;
+}
+.slink:hover { background: rgba(255,255,255,.07); color: #d4e0dc; }
+.slink.on { background: rgba(255,255,255,.10); color: #fff; }
+.slink .sicon { font-size: 14px; }
+
+/* Admin main */
+.admin-main { padding: 22px clamp(16px,2.5vw,26px); overflow: hidden; }
+
+.a-page-head {
+  display: flex; align-items: flex-start; gap: 12px;
+  margin-bottom: 18px; flex-wrap: wrap;
+}
+.a-page-head h2 {
+  font-family: 'Bricolage Grotesque'; font-weight: 700; font-size: 20px;
+}
+.a-page-head .a-sub { color: var(--muted); font-size: 13px; margin-top: 3px; }
+.live-pill {
+  margin-left: auto; padding: 6px 12px; flex-shrink: 0;
+  background: var(--card); border: 1px solid var(--line);
+  border-radius: 30px; font-size: 12px; font-weight: 600; color: var(--muted);
+}
+
+/* KPI grid */
+.kpi-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 12px; margin-bottom: 16px;
+}
+@media (max-width: 860px) { .kpi-grid { grid-template-columns: repeat(2, 1fr); } }
+
+.kpi-card {
+  background: var(--card); border: 1px solid var(--line);
+  border-radius: 14px; padding: 15px; box-shadow: var(--shadow);
+}
+.kpi-k { font-size: 12px; color: var(--muted); font-weight: 600; }
+.kpi-v {
+  font-family: 'Bricolage Grotesque'; font-weight: 800;
+  font-size: 26px; margin: 6px 0 4px;
+}
+.kpi-delta { font-size: 11.5px; font-weight: 700; }
+.kpi-up   { color: var(--green); }
+.kpi-down { color: var(--red); }
+.kpi-neu  { color: var(--muted); }
+
+/* Chart grid — complaint bars + amenity usage */
+.chart-grid {
+  display: grid; grid-template-columns: 1.4fr 1fr; gap: 14px;
+}
+@media (max-width: 760px) { .chart-grid { grid-template-columns: 1fr; } }
+
+.a-panel {
+  background: var(--card); border: 1px solid var(--line);
+  border-radius: 16px; padding: 18px; box-shadow: var(--shadow);
+}
+.a-panel h3 { font-size: 14px; font-weight: 700; margin-bottom: 3px; }
+.a-panel .ph { font-size: 12px; color: var(--muted); margin-bottom: 14px; }
+
+/* Vertical bar chart */
+.bar-chart {
+  display: flex; align-items: flex-end; gap: 8px;
+  height: 130px;
+}
+.bar-col {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; gap: 5px;
+  height: 100%; justify-content: flex-end;
+}
+.bar-fill {
+  width: 100%; max-width: 34px; border-radius: 7px 7px 0 0;
+  background: linear-gradient(180deg, var(--teal-2), var(--teal));
+}
+.bar-col:nth-child(even) .bar-fill {
+  background: linear-gradient(180deg, var(--brass), #8a5e23);
+}
+.bar-col small { font-size: 10px; color: var(--muted); font-weight: 600; text-align: center; line-height: 1.3; }
+.bar-col em { font-style: normal; font-size: 10.5px; color: var(--faint); font-weight: 600; }
+
+.chart-legend {
+  display: flex; gap: 16px; flex-wrap: wrap;
+  margin-top: 10px; font-size: 12px; color: var(--muted);
+}
+.chart-legend span { display: flex; align-items: center; gap: 6px; }
+.legend-dot {
+  width: 10px; height: 10px; border-radius: 3px; display: inline-block; flex-shrink: 0;
+}
+
+/* Usage bars */
+.usage-list { display: flex; flex-direction: column; gap: 13px; }
+.usage-label-row {
+  display: flex; justify-content: space-between;
+  font-size: 12.5px; font-weight: 600; margin-bottom: 5px;
+}
+.usage-label-row .u-pct { color: var(--muted); }
+.usage-track {
+  height: 8px; border-radius: 6px;
+  background: var(--line); overflow: hidden;
+}
+.usage-fill { height: 100%; border-radius: 6px; background: var(--brass); }
+.usage-item:nth-child(even) .usage-fill { background: var(--teal-2); }
+[data-theme="dark"] .usage-item:nth-child(even) .usage-fill { background: var(--green); }
+
+/* Activity feed */
+.activity-feed { margin-top: 15px; }
+.act-row {
+  display: flex; gap: 11px; align-items: flex-start;
+  padding: 10px 0; border-bottom: 1px solid var(--line-2);
+}
+.act-row:last-child { border-bottom: 0; }
+.act-row .at { font-weight: 600; font-size: 13px; }
+.act-row .as { color: var(--muted); font-size: 12px; margin-top: 2px; }
 </style>
 </head>
 <body>
@@ -549,6 +742,7 @@ body.logged-in .bottom-nav { display: flex; }
         <small id="tagline">Community living, connected</small>
       </div>
     </div>
+    <button class="admin-topbar-btn" id="admin-btn" title="Open admin dashboard">▦ <span id="admin-btn-lbl">Admin</span></button>
     <div class="seg" id="lang-seg">
       <button data-l="en" class="on">EN</button>
       <button data-l="hi">हिं</button>
@@ -753,6 +947,144 @@ body.logged-in .bottom-nav { display: flex; }
 </div>
 
 <!-- ═══════════════════════════════════════
+     ADMIN DASHBOARD VIEW
+     ═══════════════════════════════════════ -->
+<div id="admin-view" class="view">
+  <div class="browser-wrap">
+
+    <!-- Browser chrome -->
+    <div class="browser-bar">
+      <div class="browser-dots"><span></span><span></span><span></span></div>
+      <div class="browser-url">admin.jubileehillsconnect.app</div>
+      <button class="browser-back" onclick="exitAdmin()">← <span id="a-back-lbl">Back to app</span></button>
+    </div>
+
+    <div class="admin-layout">
+
+      <!-- Sidebar -->
+      <aside class="admin-sidebar">
+        <div class="sidebar-logo">
+          <div class="mark"><span>JH</span></div>
+          <b>Jubilee Hills</b>
+        </div>
+        <nav class="sidebar-nav">
+          <button class="slink on" data-sp="overview"><span class="sicon">▦</span> <span id="a-over">Overview</span></button>
+          <button class="slink" data-sp="flats"><span class="sicon">⌂</span> <span id="a-flats">Flats &amp; residents</span></button>
+          <button class="slink" data-sp="staff"><span class="sicon">👥</span> <span id="a-staff">Staff</span></button>
+          <button class="slink" data-sp="comp"><span class="sicon">🛠️</span> <span id="a-comp">Complaints</span></button>
+          <button class="slink" data-sp="fin"><span class="sicon">₹</span> <span id="a-fin">Financials</span></button>
+          <button class="slink" data-sp="amen"><span class="sicon">📅</span> <span id="a-amen2">Amenities</span></button>
+          <button class="slink" data-sp="visit"><span class="sicon">🪪</span> <span id="a-visit">Visitors</span></button>
+          <button class="slink" data-sp="rep"><span class="sicon">📈</span> <span id="a-rep">Reports</span></button>
+        </nav>
+      </aside>
+
+      <!-- Main content -->
+      <div class="admin-main">
+
+        <!-- Page header -->
+        <div class="a-page-head">
+          <div>
+            <h2 id="a-title">Community overview</h2>
+            <div class="a-sub" id="a-sub">Jubilee Hills, Baner · 248 flats · June 2026</div>
+          </div>
+          <div class="live-pill">📊 <span id="a-live">Live</span></div>
+        </div>
+
+        <!-- KPIs -->
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <div class="kpi-k" id="k-occ">Occupancy</div>
+            <div class="kpi-v">94%</div>
+            <div class="kpi-delta kpi-up">▲ 2% MoM</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-k" id="k-col">Dues collected</div>
+            <div class="kpi-v">₹11.4L</div>
+            <div class="kpi-delta kpi-up" id="k-col2">▲ 88% of billed</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-k" id="k-open">Open complaints</div>
+            <div class="kpi-v">17</div>
+            <div class="kpi-delta kpi-down" id="k-open2">▲ 4 vs last week</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-k" id="k-bk">Amenity bookings</div>
+            <div class="kpi-v">63</div>
+            <div class="kpi-delta kpi-neu" id="k-bk2">this week</div>
+          </div>
+        </div>
+
+        <!-- Charts -->
+        <div class="chart-grid">
+
+          <!-- Left — complaint trends bar chart -->
+          <div class="a-panel">
+            <h3 id="p1">Complaint trends</h3>
+            <div class="ph" id="p1s">By category · last 30 days</div>
+            <div class="bar-chart">
+              <div class="bar-col"><em>24</em><div class="bar-fill" style="height:80%"></div><small id="cat1">Plumbing</small></div>
+              <div class="bar-col"><em>17</em><div class="bar-fill" style="height:57%"></div><small id="cat2">Electrical</small></div>
+              <div class="bar-col"><em>30</em><div class="bar-fill" style="height:100%"></div><small id="cat3">Lift</small></div>
+              <div class="bar-col"><em>12</em><div class="bar-fill" style="height:40%"></div><small id="cat4">Housekeep</small></div>
+              <div class="bar-col"><em>9</em><div class="bar-fill" style="height:30%"></div><small id="cat5">Security</small></div>
+              <div class="bar-col"><em>14</em><div class="bar-fill" style="height:47%"></div><small id="cat6">Other</small></div>
+            </div>
+            <div class="chart-legend">
+              <span><span class="legend-dot" style="background:var(--teal)"></span><span id="lg1">Maintenance</span></span>
+              <span><span class="legend-dot" style="background:var(--brass)"></span><span id="lg2">Facilities</span></span>
+            </div>
+          </div>
+
+          <!-- Right — amenity usage + activity feed -->
+          <div class="a-panel">
+            <h3 id="p2">Amenity usage</h3>
+            <div class="ph" id="p2s">Most booked this month</div>
+            <div class="usage-list">
+              <div class="usage-item">
+                <div class="usage-label-row"><span id="u1">Multipurpose Hall</span><span class="u-pct">92%</span></div>
+                <div class="usage-track"><div class="usage-fill" style="width:92%"></div></div>
+              </div>
+              <div class="usage-item">
+                <div class="usage-label-row"><span id="u2">Party Place · 18th Floor</span><span class="u-pct">78%</span></div>
+                <div class="usage-track"><div class="usage-fill" style="width:78%"></div></div>
+              </div>
+              <div class="usage-item">
+                <div class="usage-label-row"><span id="u3">Swimming Pool</span><span class="u-pct">64%</span></div>
+                <div class="usage-track"><div class="usage-fill" style="width:64%"></div></div>
+              </div>
+              <div class="usage-item">
+                <div class="usage-label-row"><span id="u4">Gym</span><span class="u-pct">55%</span></div>
+                <div class="usage-track"><div class="usage-fill" style="width:55%"></div></div>
+              </div>
+              <div class="usage-item">
+                <div class="usage-label-row"><span id="u5">Clubhouse</span><span class="u-pct">41%</span></div>
+                <div class="usage-track"><div class="usage-fill" style="width:41%"></div></div>
+              </div>
+            </div>
+            <div class="activity-feed">
+              <div class="act-row">
+                <div class="dot" style="background:var(--green);margin-top:4px"></div>
+                <div><div class="at" id="f1">Hall booked — 18 Jun</div><div class="as">B-704 · ₹2,500 paid</div></div>
+              </div>
+              <div class="act-row">
+                <div class="dot" style="background:var(--red);margin-top:4px"></div>
+                <div><div class="at" id="f2">SOS resolved</div><div class="as" id="f2s">A-1203 · medical · 4 min</div></div>
+              </div>
+              <div class="act-row">
+                <div class="dot" style="background:var(--brass);margin-top:4px"></div>
+                <div><div class="at" id="f3">New complaint raised</div><div class="as" id="f3s">C-302 · Lift noise · assigned</div></div>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /chart-grid -->
+      </div><!-- /admin-main -->
+    </div><!-- /admin-layout -->
+  </div><!-- /browser-wrap -->
+</div>
+
+<!-- ═══════════════════════════════════════
      SOS DIALOG
      ═══════════════════════════════════════ -->
 <div class="overlay" id="sos-overlay">
@@ -846,22 +1178,22 @@ document.getElementById('theme-btn').addEventListener('click', function () {
    SCREEN SWITCHING
    ──────────────────────────────────────── */
 function showScreen(name) {
-  // Views
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
   const target = document.getElementById(name + '-view');
-  if (target) {
-    target.classList.add('active');
-    window.scrollTo(0, 0);
-  }
-  // Nav buttons
+  if (target) { target.classList.add('active'); window.scrollTo(0, 0); }
+  // Bottom nav — hide in admin view
+  document.body.classList.toggle('in-admin', name === 'admin');
   document.querySelectorAll('#bottom-nav button').forEach(b => {
     b.classList.toggle('on', b.dataset.screen === name);
   });
-  // Stub screens
-  if (name === 'gate' || name === 'help') {
-    showStub(name);
-  }
+  if (name === 'gate' || name === 'help') showStub(name);
 }
+
+function exitAdmin() {
+  showScreen('home');
+}
+
+document.getElementById('admin-btn').addEventListener('click', () => showScreen('admin'));
 
 function showStub(name) {
   const labels = {
@@ -936,6 +1268,27 @@ const strings = {
     'bk-row-amen': 'Amenity', 'bk-row-date': 'Date', 'bk-row-time': 'Time', 'bk-row-fee': 'Fee',
     'bk-ok-title': 'Booked!',
     'bk-ok-body':  'Your slot is confirmed. Show this reference at the amenity entrance.',
+    // admin
+    'admin-btn-lbl': 'Admin',
+    'a-back-lbl': 'Back to app',
+    'a-over': 'Overview', 'a-flats': 'Flats & residents', 'a-staff': 'Staff',
+    'a-comp': 'Complaints', 'a-fin': 'Financials', 'a-amen2': 'Amenities',
+    'a-visit': 'Visitors', 'a-rep': 'Reports',
+    'a-title': 'Community overview',
+    'a-sub':   'Jubilee Hills, Baner · 248 flats · June 2026',
+    'a-live':  'Live',
+    'k-occ': 'Occupancy', 'k-col': 'Dues collected', 'k-col2': '▲ 88% of billed',
+    'k-open': 'Open complaints', 'k-open2': '▲ 4 vs last week',
+    'k-bk': 'Amenity bookings', 'k-bk2': 'this week',
+    'p1': 'Complaint trends', 'p1s': 'By category · last 30 days',
+    'cat1': 'Plumbing', 'cat2': 'Electrical', 'cat3': 'Lift',
+    'cat4': 'Housekeep', 'cat5': 'Security', 'cat6': 'Other',
+    'lg1': 'Maintenance', 'lg2': 'Facilities',
+    'p2': 'Amenity usage', 'p2s': 'Most booked this month',
+    'u1': 'Multipurpose Hall', 'u2': 'Party Place · 18th Floor',
+    'u3': 'Swimming Pool', 'u4': 'Gym', 'u5': 'Clubhouse',
+    'f1': 'Hall booked — 18 Jun', 'f2': 'SOS resolved', 'f2s': 'A-1203 · medical · 4 min',
+    'f3': 'New complaint raised', 'f3s': 'C-302 · Lift noise · assigned',
   },
   hi: {
     tagline:         'समुदाय जीवन, जुड़ा हुआ',
@@ -975,6 +1328,26 @@ const strings = {
     'bk-row-amen': 'सुविधा', 'bk-row-date': 'तारीख', 'bk-row-time': 'समय', 'bk-row-fee': 'शुल्क',
     'bk-ok-title': 'बुक हो गया!',
     'bk-ok-body':  'आपका स्लॉट पक्का हो गया है। सुविधा प्रवेश पर यह संदर्भ दिखाएं।',
+    'admin-btn-lbl': 'एडमिन',
+    'a-back-lbl': 'ऐप पर वापस',
+    'a-over': 'अवलोकन', 'a-flats': 'फ्लैट व निवासी', 'a-staff': 'स्टाफ़',
+    'a-comp': 'शिकायतें', 'a-fin': 'वित्त', 'a-amen2': 'सुविधाएँ',
+    'a-visit': 'आगंतुक', 'a-rep': 'रिपोर्ट',
+    'a-title': 'समुदाय अवलोकन',
+    'a-sub':   'जुबली हिल्स, बाणेर · 248 फ्लैट · जून 2026',
+    'a-live':  'लाइव',
+    'k-occ': 'अधिभोग', 'k-col': 'वसूली', 'k-col2': '▲ बिल का 88%',
+    'k-open': 'खुली शिकायतें', 'k-open2': '▲ पिछले हफ्ते से 4',
+    'k-bk': 'सुविधा बुकिंग', 'k-bk2': 'इस सप्ताह',
+    'p1': 'शिकायत रुझान', 'p1s': 'श्रेणी अनुसार · 30 दिन',
+    'cat1': 'प्लंबिंग', 'cat2': 'बिजली', 'cat3': 'लिफ्ट',
+    'cat4': 'सफाई', 'cat5': 'सुरक्षा', 'cat6': 'अन्य',
+    'lg1': 'मेंटेनेंस', 'lg2': 'फैसिलिटीज़',
+    'p2': 'सुविधा उपयोग', 'p2s': 'इस माह सर्वाधिक बुक',
+    'u1': 'मल्टीपर्पज़ हॉल', 'u2': 'पार्टी प्लेस · 18वीं मंज़िल',
+    'u3': 'स्विमिंग पूल', 'u4': 'जिम', 'u5': 'क्लबहाउस',
+    'f1': 'हॉल बुक — 18 जून', 'f2': 'SOS हल हुआ', 'f2s': 'A-1203 · मेडिकल · 4 मिनट',
+    'f3': 'नई शिकायत दर्ज', 'f3s': 'C-302 · लिफ्ट शोर · सौंपा गया',
   },
   mr: {
     tagline:         'समुदाय जीवन, जोडलेले',
@@ -1014,6 +1387,26 @@ const strings = {
     'bk-row-amen': 'सुविधा', 'bk-row-date': 'तारीख', 'bk-row-time': 'वेळ', 'bk-row-fee': 'शुल्क',
     'bk-ok-title': 'बुक झाले!',
     'bk-ok-body':  'तुमचा स्लॉट निश्चित झाला. सुविधा प्रवेशाच्या वेळी हा संदर्भ दाखवा.',
+    'admin-btn-lbl': 'अ‍ॅडमिन',
+    'a-back-lbl': 'अ‍ॅपवर परत',
+    'a-over': 'आढावा', 'a-flats': 'फ्लॅट व रहिवासी', 'a-staff': 'कर्मचारी',
+    'a-comp': 'तक्रारी', 'a-fin': 'वित्त', 'a-amen2': 'सुविधा',
+    'a-visit': 'पाहुणे', 'a-rep': 'अहवाल',
+    'a-title': 'समुदाय आढावा',
+    'a-sub':   'जुबिली हिल्स, बाणेर · 248 फ्लॅट · जून 2026',
+    'a-live':  'थेट',
+    'k-occ': 'भोगवटा', 'k-col': 'वसुली', 'k-col2': '▲ बिलाच्या 88%',
+    'k-open': 'खुल्या तक्रारी', 'k-open2': '▲ मागील आठवड्यापेक्षा 4',
+    'k-bk': 'सुविधा बुकिंग', 'k-bk2': 'या आठवड्यात',
+    'p1': 'तक्रार कल', 'p1s': 'श्रेणीनुसार · 30 दिवस',
+    'cat1': 'प्लंबिंग', 'cat2': 'वीज', 'cat3': 'लिफ्ट',
+    'cat4': 'स्वच्छता', 'cat5': 'सुरक्षा', 'cat6': 'इतर',
+    'lg1': 'मेंटेनन्स', 'lg2': 'फॅसिलिटीज',
+    'p2': 'सुविधा वापर', 'p2s': 'या महिन्यात सर्वाधिक बुक',
+    'u1': 'मल्टीपर्पज हॉल', 'u2': 'पार्टी प्लेस · 18वा मजला',
+    'u3': 'स्विमिंग पूल', 'u4': 'जिम', 'u5': 'क्लबहाऊस',
+    'f1': 'हॉल बुक — 18 जून', 'f2': 'SOS सोडवले', 'f2s': 'A-1203 · वैद्यकीय · 4 मिनिटे',
+    'f3': 'नवीन तक्रार नोंदवली', 'f3s': 'C-302 · लिफ्ट आवाज · दिले',
   }
 };
 
@@ -1274,6 +1667,16 @@ document.getElementById('pay-close').addEventListener('click', () => {
 });
 document.getElementById('pay-overlay').addEventListener('click', e => {
   if (e.target === e.currentTarget) document.getElementById('pay-overlay').classList.remove('open');
+});
+
+/* ────────────────────────────────────────
+   ADMIN SIDEBAR LINKS
+   ──────────────────────────────────────── */
+document.querySelectorAll('.slink').forEach(link => {
+  link.addEventListener('click', () => {
+    document.querySelectorAll('.slink').forEach(l => l.classList.remove('on'));
+    link.classList.add('on');
+  });
 });
 </script>
 </body>
